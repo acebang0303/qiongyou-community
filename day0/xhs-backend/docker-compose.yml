@@ -1,0 +1,65 @@
+version: "3.8"
+
+# 仿小红书高并发实训 —— 统一中间件环境
+# Day1 只需要 MySQL；Redis / RabbitMQ / Elasticsearch 在 Day2~Day8 逐步使用
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: xhs-mysql
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: xhs
+      TZ: Asia/Shanghai
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # 首次启动自动执行建库建表与测试数据脚本
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p123456"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7
+    container_name: xhs-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: xhs-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"      # AMQP
+      - "15672:15672"    # 管理台（guest / guest）
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.2
+    container_name: xhs-elasticsearch
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
+volumes:
+  mysql-data:
+  redis-data:
+  rabbitmq-data:
+  es-data:

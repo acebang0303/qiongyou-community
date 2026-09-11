@@ -1,0 +1,309 @@
+/* 全局样式：小红书风格（红色主题 #ff2442） */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 顶部导航 */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #ff2442;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.header-search {
+  flex: 1;
+  max-width: 400px;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-link {
+  cursor: pointer;
+  font-size: 15px;
+  color: #333;
+}
+
+.nav-link:hover {
+  color: #ff2442;
+}
+
+/* 笔记卡片瀑布流 */
+.note-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.note-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.note-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.note-cover {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.note-card-body {
+  padding: 10px 12px 14px;
+}
+
+.note-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.note-card-footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #999;
+}
+
+.note-card-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.avatar-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ff2442;
+  color: #fff;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 详情页 */
+.detail-layout {
+  display: flex;
+  gap: 24px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+}
+
+.detail-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.detail-content {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #444;
+  white-space: pre-wrap;
+}
+
+.detail-tags {
+  margin-top: 16px;
+}
+
+.detail-meta {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #999;
+}
+
+.detail-actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 24px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #666;
+}
+
+.action-btn:hover {
+  color: #ff2442;
+}
+
+.action-btn.active {
+  color: #ff2442;
+  font-weight: 600;
+}
+
+.detail-side {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.author-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 16px;
+}
+
+.avatar-large {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ff2442;
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 评论区 */
+.comment-section {
+  margin-top: 32px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 32px;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.comment-body {
+  flex: 1;
+}
+
+.comment-nickname {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.comment-content {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 4px;
+}
+
+/* 用户主页 */
+.user-header {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.avatar-huge {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #ff2442;
+  color: #fff;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.user-stats b {
+  color: #333;
+}
+
+.empty-tip {
+  text-align: center;
+  color: #999;
+  padding: 60px 0;
+}

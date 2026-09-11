@@ -1,0 +1,22 @@
+{
+  "name": "xhs-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "仿小红书高并发内容社区系统 —— Day0 基线前端",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.6.8",
+    "element-plus": "^2.6.3",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.2.8"
+  }
+}

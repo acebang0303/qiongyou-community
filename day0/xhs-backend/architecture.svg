@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 980" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+  <defs>
+    <linearGradient id="gHeader" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#667eea"/>
+      <stop offset="100%" stop-color="#764ba2"/>
+    </linearGradient>
+    <linearGradient id="gCtrl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4facfe"/>
+      <stop offset="100%" stop-color="#00f2fe"/>
+    </linearGradient>
+    <linearGradient id="gSvc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#43e97b"/>
+      <stop offset="100%" stop-color="#38f9d7"/>
+    </linearGradient>
+    <linearGradient id="gMap" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fa709a"/>
+      <stop offset="100%" stop-color="#fee140"/>
+    </linearGradient>
+    <linearGradient id="gDB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a18cd1"/>
+      <stop offset="100%" stop-color="#fbc2eb"/>
+    </linearGradient>
+    <linearGradient id="gRedis" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#dc382c"/>
+      <stop offset="100%" stop-color="#ff6b6b"/>
+    </linearGradient>
+    <linearGradient id="gRabbit" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff6600"/>
+      <stop offset="100%" stop-color="#ffaa33"/>
+    </linearGradient>
+    <linearGradient id="gES" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0077cc"/>
+      <stop offset="100%" stop-color="#33bbff"/>
+    </linearGradient>
+    <linearGradient id="gCom" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffecd2"/>
+      <stop offset="100%" stop-color="#fcb69f"/>
+    </linearGradient>
+    <linearGradient id="gCfg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c3cfe2"/>
+      <stop offset="100%" stop-color="#f5f7fa"/>
+    </linearGradient>
+    <linearGradient id="gCli" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0f2027"/>
+      <stop offset="50%" stop-color="#203a43"/>
+      <stop offset="100%" stop-color="#2c5364"/>
+    </linearGradient>
+    <filter id="sh"><feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#00000022"/></filter>
+    <filter id="shS"><feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#00000018"/></filter>
+    <marker id="aP" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#c2185b"/></marker>
+    <marker id="aB" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#1a73e8"/></marker>
+    <marker id="aG" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#1e8e3e"/></marker>
+    <marker id="aR" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#dc382c"/></marker>
+    <marker id="aO" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#ff6600"/></marker>
+    <marker id="aE" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#0077cc"/></marker>
+    <marker id="aGray" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#888"/></marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1100" height="980" rx="16" fill="#f8f9fc"/>
+
+  <!-- ========== 标题 ========== -->
+  <rect x="30" y="18" width="1040" height="52" rx="12" fill="url(#gHeader)" filter="url(#sh)"/>
+  <text x="550" y="50" text-anchor="middle" fill="#fff" font-size="20" font-weight="bold">xhs-backend 技术架构 — 仿小红书高并发内容社区（基线版 + 演进规划）</text>
+
+  <!-- ========== 客户端 ========== -->
+  <rect x="390" y="88" width="320" height="40" rx="10" fill="url(#gCli)" filter="url(#sh)"/>
+  <text x="550" y="113" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">客户端（Vue / Postman）</text>
+  <line x1="550" y1="128" x2="550" y2="156" stroke="#667eea" stroke-width="2.5" marker-end="url(#aB)"/>
+  <text x="564" y="146" fill="#667eea" font-size="10">HTTP REST</text>
+
+  <!-- ========== Spring Boot 容器 ========== -->
+  <rect x="30" y="160" width="1040" height="540" rx="14" fill="#fff" stroke="#d0d5dd" stroke-width="1.5" filter="url(#sh)"/>
+  <rect x="30" y="160" width="1040" height="36" rx="14" fill="#eef1f8"/>
+  <rect x="30" y="182" width="1040" height="14" fill="#eef1f8"/>
+  <text x="550" y="184" text-anchor="middle" fill="#444" font-size="13" font-weight="bold">Spring Boot 2.7.18  ·  端口 8080  ·  Java 8  ·  XhsApplication.java</text>
+
+  <!-- ===== 通用 + 配置 ===== -->
+  <rect x="52" y="208" width="480" height="48" rx="8" fill="url(#gCom)" filter="url(#shS)"/>
+  <text x="62" y="226" fill="#8B5E3C" font-size="11" font-weight="bold">common 通用层</text>
+  <text x="62" y="244" fill="#6B4226" font-size="10">Result&lt;T&gt; 统一响应  ·  GlobalExceptionHandler 全局异常兜底</text>
+  <rect x="552" y="208" width="506" height="48" rx="8" fill="url(#gCfg)" filter="url(#shS)"/>
+  <text x="562" y="226" fill="#555" font-size="11" font-weight="bold">config 配置层</text>
+  <text x="562" y="244" fill="#666" font-size="10">CorsConfig 跨域  ·  MybatisPlusConfig 分页插件</text>
+
+  <!-- ===== Controller 层 ===== -->
+  <rect x="52" y="270" width="996" height="90" rx="10" fill="#e8f4fd" stroke="#b3d9f2" stroke-width="1"/>
+  <text x="62" y="288" fill="#1a73e8" font-size="12" font-weight="bold">Controller 控制层 — 接收 HTTP 请求，参数校验，调用 Service</text>
+
+  <rect x="66" y="298" width="228" height="50" rx="8" fill="url(#gCtrl)" filter="url(#shS)"/>
+  <text x="180" y="318" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">UserController</text>
+  <text x="180" y="336" text-anchor="middle" fill="#e8f4ff" font-size="9.5">/api/users  登录·主页·关注</text>
+
+  <rect x="306" y="298" width="228" height="50" rx="8" fill="url(#gCtrl)" filter="url(#shS)"/>
+  <text x="420" y="318" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">NoteController</text>
+  <text x="420" y="336" text-anchor="middle" fill="#e8f4ff" font-size="9.5">/api/notes  列表·热门·搜索·详情·发布</text>
+
+  <rect x="546" y="298" width="228" height="50" rx="8" fill="url(#gCtrl)" filter="url(#shS)"/>
+  <text x="660" y="318" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">CommentController</text>
+  <text x="660" y="336" text-anchor="middle" fill="#e8f4ff" font-size="9.5">/api/notes/{id}/comments  评论</text>
+
+  <rect x="786" y="298" width="248" height="50" rx="8" fill="url(#gCtrl)" filter="url(#shS)"/>
+  <text x="910" y="318" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">InteractController</text>
+  <text x="910" y="336" text-anchor="middle" fill="#e8f4ff" font-size="9.5">/api/notes  点赞·收藏</text>
+
+  <!-- Controller → Service 箭头 -->
+  <line x1="180" y1="348" x2="180" y2="374" stroke="#1a73e8" stroke-width="1.5" marker-end="url(#aB)"/>
+  <line x1="420" y1="348" x2="420" y2="374" stroke="#1a73e8" stroke-width="1.5" marker-end="url(#aB)"/>
+  <line x1="660" y1="348" x2="660" y2="374" stroke="#1a73e8" stroke-width="1.5" marker-end="url(#aB)"/>
+  <line x1="910" y1="348" x2="910" y2="374" stroke="#1a73e8" stroke-width="1.5" marker-end="url(#aB)"/>
+
+  <!-- ===== Service 层 ===== -->
+  <rect x="52" y="374" width="996" height="90" rx="10" fill="#e6f9ee" stroke="#a3e4b8" stroke-width="1"/>
+  <text x="62" y="392" fill="#1e8e3e" font-size="12" font-weight="bold">Service 业务层 — 核心业务逻辑，基线版全部直查 MySQL</text>
+
+  <rect x="66" y="408" width="228" height="50" rx="8" fill="url(#gSvc)" filter="url(#shS)"/>
+  <text x="180" y="428" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">UserService</text>
+  <text x="180" y="446" text-anchor="middle" fill="#e8fff0" font-size="9.5">登录·主页统计·关注/粉丝</text>
+
+  <rect x="306" y="408" width="228" height="50" rx="8" fill="url(#gSvc)" filter="url(#shS)"/>
+  <text x="420" y="428" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">NoteService</text>
+  <text x="420" y="446" text-anchor="middle" fill="#e8fff0" font-size="9.5">最新·Feed·热门·搜索·详情·发布</text>
+
+  <rect x="546" y="408" width="228" height="50" rx="8" fill="url(#gSvc)" filter="url(#shS)"/>
+  <text x="660" y="428" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">CommentService</text>
+  <text x="660" y="446" text-anchor="middle" fill="#e8fff0" font-size="9.5">评论列表·发表+计数更新</text>
+
+  <rect x="786" y="408" width="248" height="50" rx="8" fill="url(#gSvc)" filter="url(#shS)"/>
+  <text x="910" y="428" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">InteractService</text>
+  <text x="910" y="446" text-anchor="middle" fill="#e8fff0" font-size="9.5">点赞/取消·收藏/取消·关注</text>
+
+  <!-- Service → 数据层 实线箭头（到 Mapper） -->
+  <line x1="180" y1="458" x2="180" y2="486" stroke="#1e8e3e" stroke-width="1.5" marker-end="url(#aG)"/>
+  <line x1="420" y1="458" x2="420" y2="486" stroke="#1e8e3e" stroke-width="1.5" marker-end="url(#aG)"/>
+  <line x1="660" y1="458" x2="660" y2="486" stroke="#1e8e3e" stroke-width="1.5" marker-end="url(#aG)"/>
+  <line x1="910" y1="458" x2="910" y2="486" stroke="#1e8e3e" stroke-width="1.5" marker-end="url(#aG)"/>
+
+  <!-- ===== 数据与中间件层（并列） ===== -->
+  <rect x="52" y="486" width="996" height="196" rx="10" fill="#faf5ff" stroke="#c9a0dc" stroke-width="1.2"/>
+  <text x="62" y="504" fill="#7b2d8e" font-size="12" font-weight="bold">数据与中间件层 — 持久化 + 缓存 / 消息队列 / 搜索引擎（虚线 = 演进规划）</text>
+
+  <!-- -- 上半：MyBatis Mapper -- -->
+  <rect x="60" y="514" width="980" height="72" rx="8" fill="#fde8ef" stroke="#f2b3c6" stroke-width="0.8"/>
+  <text x="70" y="530" fill="#c2185b" font-size="11" font-weight="bold">MyBatis-Plus Mapper（当前 · 实线连接）</text>
+
+  <rect x="72" y="540" width="134" height="38" rx="6" fill="url(#gMap)" filter="url(#shS)"/>
+  <text x="139" y="556" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">UserMapper</text>
+  <text x="139" y="570" text-anchor="middle" fill="#fff8e0" font-size="9">t_user</text>
+
+  <rect x="220" y="540" width="134" height="38" rx="6" fill="url(#gMap)" filter="url(#shS)"/>
+  <text x="287" y="556" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">NoteMapper</text>
+  <text x="287" y="570" text-anchor="middle" fill="#fff8e0" font-size="9">t_note</text>
+
+  <rect x="368" y="540" width="134" height="38" rx="6" fill="url(#gMap)" filter="url(#shS)"/>
+  <text x="435" y="556" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">CommentMapper</text>
+  <text x="435" y="570" text-anchor="middle" fill="#fff8e0" font-size="9">t_comment</text>
+
+  <rect x="516" y="540" width="134" height="38" rx="6" fill="url(#gMap)" filter="url(#shS)"/>
+  <text x="583" y="556" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">NoteLikeMapper</text>
+  <text x="583" y="570" text-anchor="middle" fill="#fff8e0" font-size="9">t_note_like</text>
+
+  <rect x="664" y="540" width="150" height="38" rx="6" fill="url(#gMap)" filter="url(#shS)"/>
+  <text x="739" y="556" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">NoteFavMapper</text>
+  <text x="739" y="570" text-anchor="middle" fill="#fff8e0" font-size="9">t_note_favorite</text>
+
+  <rect x="828" y="540" width="134" height="38" rx="6" fill="url(#gMap)" filter="url(#shS)"/>
+  <text x="895" y="556" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">FollowMapper</text>
+  <text x="895" y="570" text-anchor="middle" fill="#fff8e0" font-size="9">t_follow</text>
+
+  <!-- -- 下半：Redis / RabbitMQ / ES -- -->
+  <!-- Redis: center≈420 -->
+  <rect x="245" y="598" width="350" height="68" rx="10" fill="url(#gRedis)" stroke="#b02020" stroke-width="1.5" stroke-dasharray="8,4" filter="url(#sh)"/>
+  <text x="420" y="620" text-anchor="middle" fill="#fff" font-size="15" font-weight="bold">Redis</text>
+  <text x="420" y="638" text-anchor="middle" fill="#ffe0e0" font-size="10">Day2 笔记详情缓存 · Day3 点赞写流量承接</text>
+  <text x="420" y="654" text-anchor="middle" fill="#ffe0e0" font-size="10">Day7 热门榜 ZSet · 关注 Feed ZSet</text>
+
+  <!-- RabbitMQ: center≈660 -->
+  <rect x="607" y="598" width="106" height="68" rx="10" fill="url(#gRabbit)" stroke="#cc5200" stroke-width="1.5" stroke-dasharray="8,4" filter="url(#sh)"/>
+  <text x="660" y="618" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">RabbitMQ</text>
+  <text x="660" y="636" text-anchor="middle" fill="#fff3e0" font-size="9">Day6</text>
+  <text x="660" y="650" text-anchor="middle" fill="#fff3e0" font-size="9">评论通知异步</text>
+  <text x="660" y="662" text-anchor="middle" fill="#fff3e0" font-size="9">流量削峰</text>
+
+  <!-- ES: center≈910 -->
+  <rect x="726" y="598" width="106" height="68" rx="10" fill="url(#gES)" stroke="#005599" stroke-width="1.5" stroke-dasharray="8,4" filter="url(#sh)"/>
+  <text x="779" y="618" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Elasticsearch</text>
+  <text x="779" y="636" text-anchor="middle" fill="#d0e8ff" font-size="9">Day8</text>
+  <text x="779" y="650" text-anchor="middle" fill="#d0e8ff" font-size="9">全文检索</text>
+  <text x="779" y="662" text-anchor="middle" fill="#d0e8ff" font-size="9">分词·高亮·聚合</text>
+
+  <!-- Service → 中间件 虚线箭头（垂直不交叉） -->
+  <!-- NoteService(420) → Redis(420) -->
+  <line x1="420" y1="458" x2="420" y2="596" stroke="#dc382c" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#aR)"/>
+  <!-- CommentService(660) → RabbitMQ(660) -->
+  <line x1="660" y1="458" x2="660" y2="596" stroke="#ff6600" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#aO)"/>
+  <!-- InteractService(910) → ES(779) — 用折线避免倾斜 -->
+  <polyline points="910,458 910,590 832,590 832,596" stroke="#0077cc" stroke-width="2" stroke-dasharray="6,4" fill="none" marker-end="url(#aE)"/>
+
+  <!-- ========== Entity / VO 标注 ========== -->
+  <rect x="52" y="694" width="480" height="44" rx="8" fill="#f3e8ff" stroke="#d0b3f2" stroke-width="1" filter="url(#shS)"/>
+  <text x="62" y="712" fill="#7b2d8e" font-size="11" font-weight="bold">Entity 实体层</text>
+  <text x="62" y="728" fill="#8e44ad" font-size="10">User · Note · Comment · NoteLike · NoteFavorite · Follow</text>
+
+  <rect x="552" y="694" width="496" height="44" rx="8" fill="#fff3e0" stroke="#f2c98a" stroke-width="1" filter="url(#shS)"/>
+  <text x="562" y="712" fill="#b36b00" font-size="11" font-weight="bold">VO 视图对象层</text>
+  <text x="562" y="728" fill="#cc7a00" font-size="10">UserVO · NoteVO · CommentVO · SimpleUserVO</text>
+
+  <!-- ========== MySQL ========== -->
+  <line x1="550" y1="738" x2="550" y2="770" stroke="#c2185b" stroke-width="2.5" marker-end="url(#aP)"/>
+  <text x="564" y="758" fill="#c2185b" font-size="10">JDBC（持久化兜底）</text>
+
+  <rect x="370" y="774" width="360" height="58" rx="14" fill="url(#gDB)" filter="url(#sh)"/>
+  <text x="550" y="800" text-anchor="middle" fill="#4a1a6b" font-size="15" font-weight="bold">MySQL 数据库</text>
+  <text x="550" y="820" text-anchor="middle" fill="#6b3a8a" font-size="11">localhost:3306/xhs  ·  mysql-connector-j  ·  6 张数据表</text>
+
+  <!-- ========== 底部技术栈 ========== -->
+  <rect x="30" y="852" width="1040" height="80" rx="12" fill="#fff" stroke="#d0d5dd" stroke-width="1" filter="url(#shS)"/>
+  <text x="50" y="874" fill="#333" font-size="12" font-weight="bold">技术栈总览</text>
+
+  <!-- 已有 -->
+  <rect x="50" y="886" width="112" height="26" rx="6" fill="#4facfe"/>
+  <text x="106" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Spring Boot 2.7</text>
+  <rect x="172" y="886" width="112" height="26" rx="6" fill="#43e97b"/>
+  <text x="228" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">MyBatis-Plus 3.5</text>
+  <rect x="294" y="886" width="90" height="26" rx="6" fill="#fa709a"/>
+  <text x="339" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">MySQL 5.x</text>
+  <rect x="394" y="886" width="72" height="26" rx="6" fill="#a18cd1"/>
+  <text x="430" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Lombok</text>
+  <rect x="476" y="886" width="68" height="26" rx="6" fill="#fcb69f"/>
+  <text x="510" y="904" text-anchor="middle" fill="#8B5E3C" font-size="10" font-weight="bold">Maven</text>
+  <rect x="554" y="886" width="68" height="26" rx="6" fill="#667eea"/>
+  <text x="588" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Java 8</text>
+
+  <!-- 演进（虚线边框） -->
+  <rect x="648" y="886" width="86" height="26" rx="6" fill="#dc382c" stroke="#b02020" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="691" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Redis</text>
+  <rect x="744" y="886" width="106" height="26" rx="6" fill="#ff6600" stroke="#cc5200" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="797" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">RabbitMQ</text>
+  <rect x="860" y="886" width="110" height="26" rx="6" fill="#0077cc" stroke="#005599" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="915" y="904" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Elasticsearch</text>
+
+  <!-- 图例 -->
+  <line x1="50" y1="924" x2="86" y2="924" stroke="#1e8e3e" stroke-width="2"/>
+  <text x="92" y="928" fill="#666" font-size="9">= 当前链路</text>
+  <line x1="200" y1="924" x2="236" y2="924" stroke="#888" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="242" y="928" fill="#666" font-size="9">= 演进规划（Day2~Day8 逐步引入中间件）</text>
+</svg>

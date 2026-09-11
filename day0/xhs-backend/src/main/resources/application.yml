@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: xhs-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/xhs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: "123456"
+
+mybatis-plus:
+  configuration:
+    # 下划线转驼峰：create_time -> createTime
+    map-underscore-to-camel-case: true
+    # 控制台打印 SQL，方便实训观察"每次请求打了多少条SQL"
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+
+logging:
+  level:
+    com.xhs: debug
