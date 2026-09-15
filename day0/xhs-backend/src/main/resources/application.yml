@@ -9,16 +9,15 @@ spring:
     url: jdbc:mysql://localhost:3307/xhs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: "123456"
+  # ★ Day2 新增：Redis 连接
   redis:
     host: localhost
-    port: 6379
-
+    port: 6380
+    timeout: 3000ms
 
 mybatis-plus:
   configuration:
-    # 下划线转驼峰：create_time -> createTime
     map-underscore-to-camel-case: true
-    # 控制台打印 SQL，方便实训观察"每次请求打了多少条SQL"
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     banner: false

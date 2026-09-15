@@ -15,7 +15,7 @@
     <artifactId>xhs-backend</artifactId>
     <version>1.0.0</version>
     <name>xhs-backend</name>
-    <description>xhs-day0</description>
+    <description>仿小红书高并发内容社区系统（Day2：引入Redis）</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -27,6 +27,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--  ★ Day2 新增：Redis  -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
         <!-- MyBatis-Plus -->
@@ -62,11 +68,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

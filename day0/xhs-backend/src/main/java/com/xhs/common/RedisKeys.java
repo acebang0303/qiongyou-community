@@ -13,6 +13,10 @@ public final class RedisKeys {
         return "note:" + noteId;
     }
 
+    public static String commentList(Long noteId) {
+        return "comment:list:" + noteId;
+    }
+
     /** 笔记缓存重建锁（Day5）：note:lock:1 */
     public static String noteLock(Long noteId) {
         return "note:lock:" + noteId;
