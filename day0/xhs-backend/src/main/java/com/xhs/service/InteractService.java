@@ -1,27 +1,24 @@
 package com.xhs.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.xhs.common.RedisKeys;
 import com.xhs.common.Result;
 import com.xhs.entity.Follow;
-import com.xhs.entity.Note;
-import com.xhs.entity.NoteFavorite;
-import com.xhs.entity.NoteLike;
 import com.xhs.mapper.FollowMapper;
-import com.xhs.mapper.NoteFavoriteMapper;
-import com.xhs.mapper.NoteLikeMapper;
 import com.xhs.mapper.NoteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 /**
- * 互动服务：点赞 / 收藏 / 关注（基线版：全部同步写 MySQL）
+ * Day3 版本：点赞 / 收藏改为 Redis 承接
  *
- * 有意保留的"问题"，作为后续实训素材：
- * 1. 高并发写：所有请求直接落库           -> Day3 用 Redis 承接
- * 2. "先查后写"存在竞态条件，重复请求只靠唯一索引兜底 -> Day4 做幂等设计
- * 3. 瞬间流量无削峰                        -> Day6 用 RabbitMQ 异步
+ * 点赞关系：Set  like:{noteId}      member = userId
+ * 点赞数量：String like:count:{noteId}
+ * 数据库落库交给 Day6 的 MQ，这里不再直接写 MySQL
+ *
+ * 注意：本版本"判断 + 计数"是两条命令，存在原子性问题，Day4 用 Lua 解决
  */
 @Service
 public class InteractService {
@@ -29,91 +26,67 @@ public class InteractService {
     @Autowired
     private NoteMapper noteMapper;
     @Autowired
-    private NoteLikeMapper likeMapper;
-    @Autowired
-    private NoteFavoriteMapper favoriteMapper;
-    @Autowired
     private FollowMapper followMapper;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
-    /**
-     * 点赞（基线版实现：先查后插 + 更新计数，两条以上 SQL 同步落库）
-     */
+    /** 点赞：SADD + INCR */
     public Result<Void> like(Long noteId, Long userId) {
+        String likeKey = RedisKeys.like(noteId);
+        Long added = redisTemplate.opsForSet().add(likeKey, userId);
         if (noteMapper.selectById(noteId) == null) {
             return Result.fail(404, "笔记不存在");
         }
-        // 先查：是否已经点过赞（注意：并发下"先查后写"有竞态窗口）
-        Long count = likeMapper.selectCount(
-                new LambdaQueryWrapper<NoteLike>()
-                        .eq(NoteLike::getUserId, userId)
-                        .eq(NoteLike::getNoteId, noteId));
-        if (count > 0) {
+        Long added = redisTemplate.opsForSet()
+                .add(RedisKeys.like(noteId), userId.toString());
+        if (!Boolean.TRUE.equals(added)) {
             return Result.fail("您已经点过赞了");
         }
-        try {
-            likeMapper.insert(new NoteLike(userId, noteId));
-        } catch (DuplicateKeyException e) {
-            // 唯一索引兜底：并发下重复插入会被拦截
-            return Result.fail("请勿重复点赞");
-        }
-        noteMapper.update(null, new LambdaUpdateWrapper<Note>()
-                .eq(Note::getId, noteId)
-                .setSql("like_count = like_count + 1"));
+        redisTemplate.opsForValue().increment(RedisKeys.likeCount(noteId));
         return Result.ok();
     }
 
-    /** 取消点赞 */
+    /** 取消点赞：SREM + DECR（下限0） */
     public Result<Void> unlike(Long noteId, Long userId) {
-        int deleted = likeMapper.delete(
-                new LambdaQueryWrapper<NoteLike>()
-                        .eq(NoteLike::getUserId, userId)
-                        .eq(NoteLike::getNoteId, noteId));
-        if (deleted > 0) {
-            noteMapper.update(null, new LambdaUpdateWrapper<Note>()
-                    .eq(Note::getId, noteId)
-                    .setSql("like_count = GREATEST(like_count - 1, 0)"));
+        Long removed = redisTemplate.opsForSet()
+                .remove(RedisKeys.like(noteId), userId.toString());
+        if (removed != null && removed > 0) {
+            Long count = redisTemplate.opsForValue().decrement(RedisKeys.likeCount(noteId));
+            if (count != null && count < 0) {
+                redisTemplate.opsForValue().set(RedisKeys.likeCount(noteId), 0);
+            }
         }
         return Result.ok();
     }
 
-    /** 收藏（实现与点赞同构，同样存在问题） */
+    /** 收藏：与点赞同构 */
     public Result<Void> favorite(Long noteId, Long userId) {
         if (noteMapper.selectById(noteId) == null) {
             return Result.fail(404, "笔记不存在");
         }
-        Long count = favoriteMapper.selectCount(
-                new LambdaQueryWrapper<NoteFavorite>()
-                        .eq(NoteFavorite::getUserId, userId)
-                        .eq(NoteFavorite::getNoteId, noteId));
-        if (count > 0) {
+        Long added = redisTemplate.opsForSet()
+                .add(RedisKeys.favorite(noteId), userId.toString());
+        if (!Boolean.TRUE.equals(added)) {
             return Result.fail("您已经收藏过了");
         }
-        try {
-            favoriteMapper.insert(new NoteFavorite(userId, noteId));
-        } catch (DuplicateKeyException e) {
-            return Result.fail("请勿重复收藏");
-        }
-        noteMapper.update(null, new LambdaUpdateWrapper<Note>()
-                .eq(Note::getId, noteId)
-                .setSql("favorite_count = favorite_count + 1"));
+        redisTemplate.opsForValue().increment(RedisKeys.favoriteCount(noteId));
         return Result.ok();
     }
 
     /** 取消收藏 */
     public Result<Void> unfavorite(Long noteId, Long userId) {
-        int deleted = favoriteMapper.delete(
-                new LambdaQueryWrapper<NoteFavorite>()
-                        .eq(NoteFavorite::getUserId, userId)
-                        .eq(NoteFavorite::getNoteId, noteId));
-        if (deleted > 0) {
-            noteMapper.update(null, new LambdaUpdateWrapper<Note>()
-                    .eq(Note::getId, noteId)
-                    .setSql("favorite_count = GREATEST(favorite_count - 1, 0)"));
+        Long removed = redisTemplate.opsForSet()
+                .remove(RedisKeys.favorite(noteId), userId.toString());
+        if (removed != null && removed > 0) {
+            Long count = redisTemplate.opsForValue().decrement(RedisKeys.favoriteCount(noteId));
+            if (count != null && count < 0) {
+                redisTemplate.opsForValue().set(RedisKeys.favoriteCount(noteId), 0);
+            }
         }
         return Result.ok();
     }
 
-    /** 关注用户 */
+    /** 关注用户（低频操作，保持 MySQL） */
     public Result<Void> follow(Long userId, Long targetUserId) {
         if (userId.equals(targetUserId)) {
             return Result.fail(400, "不能关注自己");
