@@ -9,19 +9,50 @@ import com.xhs.mapper.NoteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 /**
- * Day3 版本：点赞 / 收藏改为 Redis 承接
- *
- * 点赞关系：Set  like:{noteId}      member = userId
- * 点赞数量：String like:count:{noteId}
- * 数据库落库交给 Day6 的 MQ，这里不再直接写 MySQL
- *
- * 注意：本版本"判断 + 计数"是两条命令，存在原子性问题，Day4 用 Lua 解决
+ * Day4 版本：幂等设计
+ * 用 Lua 脚本把"判断 + 写关系 + 改计数"合并成原子操作：
+ * 同一用户无论重试多少次，结果与执行一次完全相同
  */
 @Service
 public class InteractService {
+
+    /** 点赞：SADD成功才INCR，返回1=成功，0=已经点过 */
+    private static final DefaultRedisScript<Long> LIKE_SCRIPT = new DefaultRedisScript<>(
+            "local added = redis.call('SADD', KEYS[1], ARGV[1]) " +
+            "if added == 1 then redis.call('INCR', KEYS[2]) return 1 else return 0 end",
+            Long.class);
+
+    /** 取消点赞：SREM成功才DECR（下限0），返回1=成功，0=本来就没点赞 */
+    private static final DefaultRedisScript<Long> UNLIKE_SCRIPT = new DefaultRedisScript<>(
+            "local removed = redis.call('SREM', KEYS[1], ARGV[1]) " +
+            "if removed == 1 then " +
+            "  local c = redis.call('DECR', KEYS[2]) " +
+            "  if c < 0 then redis.call('SET', KEYS[2], 0) end " +
+            "  return 1 " +
+            "else return 0 end",
+            Long.class);
+
+    /** 收藏（与点赞同构） */
+    private static final DefaultRedisScript<Long> FAVORITE_SCRIPT = new DefaultRedisScript<>(
+            "local added = redis.call('SADD', KEYS[1], ARGV[1]) " +
+            "if added == 1 then redis.call('INCR', KEYS[2]) return 1 else return 0 end",
+            Long.class);
+
+    /** 取消收藏 */
+    private static final DefaultRedisScript<Long> UNFAVORITE_SCRIPT = new DefaultRedisScript<>(
+            "local removed = redis.call('SREM', KEYS[1], ARGV[1]) " +
+            "if removed == 1 then " +
+            "  local c = redis.call('DECR', KEYS[2]) " +
+            "  if c < 0 then redis.call('SET', KEYS[2], 0) end " +
+            "  return 1 " +
+            "else return 0 end",
+            Long.class);
 
     @Autowired
     private NoteMapper noteMapper;
@@ -30,59 +61,47 @@ public class InteractService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    /** 点赞：SADD + INCR */
+    /** 幂等点赞 */
     public Result<Void> like(Long noteId, Long userId) {
-        String likeKey = RedisKeys.like(noteId);
-        Long added = redisTemplate.opsForSet().add(likeKey, userId);
         if (noteMapper.selectById(noteId) == null) {
             return Result.fail(404, "笔记不存在");
         }
-        Long added = redisTemplate.opsForSet()
-                .add(RedisKeys.like(noteId), userId.toString());
-        if (!Boolean.TRUE.equals(added)) {
+        Long result = redisTemplate.execute(LIKE_SCRIPT,
+                Arrays.asList(RedisKeys.like(noteId), RedisKeys.likeCount(noteId)),
+                userId.toString());
+        if (result == null || result == 0) {
             return Result.fail("您已经点过赞了");
         }
-        redisTemplate.opsForValue().increment(RedisKeys.likeCount(noteId));
         return Result.ok();
     }
 
-    /** 取消点赞：SREM + DECR（下限0） */
+    /** 幂等取消点赞 */
     public Result<Void> unlike(Long noteId, Long userId) {
-        Long removed = redisTemplate.opsForSet()
-                .remove(RedisKeys.like(noteId), userId.toString());
-        if (removed != null && removed > 0) {
-            Long count = redisTemplate.opsForValue().decrement(RedisKeys.likeCount(noteId));
-            if (count != null && count < 0) {
-                redisTemplate.opsForValue().set(RedisKeys.likeCount(noteId), 0);
-            }
-        }
+        redisTemplate.execute(UNLIKE_SCRIPT,
+                Arrays.asList(RedisKeys.like(noteId), RedisKeys.likeCount(noteId)),
+                userId.toString());
         return Result.ok();
     }
 
-    /** 收藏：与点赞同构 */
+    /** 幂等收藏 */
     public Result<Void> favorite(Long noteId, Long userId) {
         if (noteMapper.selectById(noteId) == null) {
             return Result.fail(404, "笔记不存在");
         }
-        Long added = redisTemplate.opsForSet()
-                .add(RedisKeys.favorite(noteId), userId.toString());
-        if (!Boolean.TRUE.equals(added)) {
+        Long result = redisTemplate.execute(FAVORITE_SCRIPT,
+                Arrays.asList(RedisKeys.favorite(noteId), RedisKeys.favoriteCount(noteId)),
+                userId.toString());
+        if (result == null || result == 0) {
             return Result.fail("您已经收藏过了");
         }
-        redisTemplate.opsForValue().increment(RedisKeys.favoriteCount(noteId));
         return Result.ok();
     }
 
-    /** 取消收藏 */
+    /** 幂等取消收藏 */
     public Result<Void> unfavorite(Long noteId, Long userId) {
-        Long removed = redisTemplate.opsForSet()
-                .remove(RedisKeys.favorite(noteId), userId.toString());
-        if (removed != null && removed > 0) {
-            Long count = redisTemplate.opsForValue().decrement(RedisKeys.favoriteCount(noteId));
-            if (count != null && count < 0) {
-                redisTemplate.opsForValue().set(RedisKeys.favoriteCount(noteId), 0);
-            }
-        }
+        redisTemplate.execute(UNFAVORITE_SCRIPT,
+                Arrays.asList(RedisKeys.favorite(noteId), RedisKeys.favoriteCount(noteId)),
+                userId.toString());
         return Result.ok();
     }
 
