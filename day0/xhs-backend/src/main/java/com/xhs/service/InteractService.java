@@ -105,6 +105,32 @@ public class InteractService {
         return Result.ok();
     }
 
+    /** 分享：Redis 计数 + 落库双写 */
+    public Result<Void> share(Long noteId, Long userId) {
+        Long added = redisTemplate.opsForSet()
+                .add(RedisKeys.share(noteId), userId.toString());
+        if (added == null || added == 0) {
+            return Result.fail("您已经分享过了");
+        }
+        redisTemplate.opsForValue().increment(RedisKeys.shareCount(noteId));
+        noteMapper.incrShareCount(noteId);
+        return Result.ok();
+    }
+
+    /** 取消分享：Redis 计数 + 落库双写，且不减成负数 */
+    public Result<Void> unshare(Long noteId, Long userId) {
+        Long removed = redisTemplate.opsForSet()
+                .remove(RedisKeys.share(noteId), userId.toString());
+        if (removed != null && removed > 0) {
+            Long count = redisTemplate.opsForValue().decrement(RedisKeys.shareCount(noteId));
+            if (count != null && count < 0) {
+                redisTemplate.opsForValue().set(RedisKeys.shareCount(noteId), 0);
+            }
+            noteMapper.decrShareCount(noteId);
+        }
+        return Result.ok();
+    }
+
     /** 关注用户（低频操作，保持 MySQL） */
     public Result<Void> follow(Long userId, Long targetUserId) {
         if (userId.equals(targetUserId)) {

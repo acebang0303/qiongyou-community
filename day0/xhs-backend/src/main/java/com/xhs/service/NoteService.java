@@ -164,6 +164,10 @@ public class NoteService {
             if (favoriteCount != null) {
                 vo.setFavoriteCount(Integer.parseInt(favoriteCount.toString()));
             }
+            Object shareCount = redisTemplate.opsForValue().get(RedisKeys.shareCount(vo.getId()));
+            if (shareCount != null) {
+                vo.setShareCount(Integer.parseInt(shareCount.toString()));
+            }
         }
     }
 }

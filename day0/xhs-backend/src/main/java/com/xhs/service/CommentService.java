@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class CommentService {
 
-    private static final long NOTE_CACHE_MINUTES = 5;
+    private static final long COMMENT_CACHE_MINUTES = 5;
 
     @Autowired
     private CommentMapper commentMapper;
@@ -41,7 +41,7 @@ public class CommentService {
         if (list == null) {
             list = commentMapper.selectByNote(noteId);
             if (list != null) {
-                redisTemplate.opsForValue().set(key, list, NOTE_CACHE_MINUTES, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(key, list, COMMENT_CACHE_MINUTES, TimeUnit.MINUTES);
             }
         }
         if (CollectionUtils.isEmpty(list)) {

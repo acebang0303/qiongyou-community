@@ -61,4 +61,26 @@ public class InteractController {
         }
         return interactService.unfavorite(id, userId);
     }
+
+    /** 分享 */
+    @PostMapping("/{id}/share")
+    public Result<Void> share(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+        if (userId == null) {
+            return Result.fail(401, "请先登录");
+        }
+        return interactService.share(id, userId);
+    }
+
+    /** 取消分享 */
+    @DeleteMapping("/{id}/share")
+    public Result<Void> unshare(
+            @PathVariable Long id,
+            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+        if (userId == null) {
+            return Result.fail(401, "请先登录");
+        }
+        return interactService.unshare(id, userId);
+    }
 }

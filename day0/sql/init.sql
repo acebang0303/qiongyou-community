@@ -37,6 +37,7 @@ CREATE TABLE t_note (
     like_count     INT         DEFAULT 0 COMMENT '点赞数',
     comment_count  INT         DEFAULT 0 COMMENT '评论数',
     favorite_count INT         DEFAULT 0 COMMENT '收藏数',
+    share_count    INT         DEFAULT 0 COMMENT '分享数',
     create_time    DATETIME    DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
     PRIMARY KEY (id),
     KEY idx_user (user_id),

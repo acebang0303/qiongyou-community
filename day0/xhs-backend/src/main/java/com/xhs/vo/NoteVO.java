@@ -19,6 +19,8 @@ public class NoteVO {
     private Integer likeCount;
     private Integer commentCount;
     private Integer favoriteCount;
+    /** 分享数：Redis 优先，Redis 无数据时回退 t_note.share_count */
+    private Integer shareCount = 0;
     private LocalDateTime createTime;
 
     /** 作者昵称 */

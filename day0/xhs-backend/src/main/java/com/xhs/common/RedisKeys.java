@@ -42,6 +42,16 @@ public final class RedisKeys {
         return "favorite:count:" + noteId;
     }
 
+    /** 分享关系 Set：share:1 */
+    public static String share(Long noteId) {
+        return "share:" + noteId;
+    }
+
+    /** 分享计数：share:count:1 */
+    public static String shareCount(Long noteId) {
+        return "share:count:" + noteId;
+    }
+
     /** 关注页收件箱 ZSet（Day7）：feed:5 */
     public static String feed(Long userId) {
         return "feed:" + userId;

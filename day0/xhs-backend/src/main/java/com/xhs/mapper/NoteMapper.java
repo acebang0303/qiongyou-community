@@ -5,6 +5,7 @@ import com.xhs.entity.Note;
 import com.xhs.vo.NoteVO;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -58,4 +59,12 @@ public interface NoteMapper extends BaseMapper<Note> {
             "FROM t_note n JOIN t_user u ON n.user_id = u.id " +
             "WHERE n.user_id = #{userId} ORDER BY n.create_time DESC")
     List<NoteVO> selectByUser(@Param("userId") Long userId);
+
+    /** 分享数 +1（落库，供 Redis 无数据时回退读取） */
+    @Update("UPDATE t_note SET share_count = share_count + 1 WHERE id = #{id}")
+    int incrShareCount(@Param("id") Long id);
+
+    /** 分享数 -1（落库，下限 0） */
+    @Update("UPDATE t_note SET share_count = GREATEST(share_count - 1, 0) WHERE id = #{id}")
+    int decrShareCount(@Param("id") Long id);
 }
