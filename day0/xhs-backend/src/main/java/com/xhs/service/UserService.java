@@ -3,6 +3,7 @@ package com.xhs.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xhs.common.JwtUtil;
 import com.xhs.common.RedisKeys;
+import com.xhs.common.RedisLock;
 import com.xhs.common.Result;
 import com.xhs.entity.Follow;
 import com.xhs.entity.Note;
@@ -38,6 +39,9 @@ public class UserService {
     private static final long NULL_TTL_SECONDS = 60;
     /** 重建锁超时（秒）：防持锁线程崩溃导致死锁 */
     private static final long LOCK_TTL_SECONDS = 10;
+    /** ★ P3-5：没抢到锁时的轮询次数与间隔（合计约 100ms） */
+    private static final int LOCK_WAIT_RETRIES = 5;
+    private static final long LOCK_WAIT_INTERVAL_MS = 20;
 
     @Autowired
     private UserMapper userMapper;
@@ -47,6 +51,8 @@ public class UserService {
     private FollowMapper followMapper;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private RedisLock redisLock;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -98,23 +104,17 @@ public class UserService {
     /**
      * ★ 分布式锁互斥重建
      * 抢到锁 → 双重检查 → 查库 → 回填（空对象/随机TTL）→ 释放锁
-     * 没抢到 → 短暂等待后重读缓存（重新走一遍 userInfo 的缓存检查）
+     * ★ P3-2：锁值改为唯一 token，释放走 Lua 比对归属（避免误删别人的锁）
+     * ★ P3-5：没抢到锁改为短暂轮询（原实现是递归重入 userInfo，存在递归风险）
      */
     private UserVO loadUserWithLock(Long userId, Long viewerId) {
         String key = RedisKeys.user(userId);
         String lockKey = RedisKeys.userLock(userId);
         // 【防击穿】抢锁：只有抢到的线程回源重建，其余线程等待后重读缓存
-        Boolean locked = redisTemplate.opsForValue()
-                .setIfAbsent(lockKey, "1", LOCK_TTL_SECONDS, TimeUnit.SECONDS);
+        String token = redisLock.tryLock(lockKey, LOCK_TTL_SECONDS);
 
-        if (!Boolean.TRUE.equals(locked)) {
-            // 没抢到锁：等一下再重读缓存，此时大概率已被别人重建好
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            return userInfo(userId, viewerId);
+        if (token == null) {
+            return waitForUserCacheOrLoad(userId, key);
         }
 
         try {
@@ -123,29 +123,54 @@ public class UserService {
             if (vo != null) {
                 return vo;
             }
-            User user = userMapper.selectById(userId);
-            if (user == null) {
+            vo = loadUserFromDb(userId);
+            if (vo == null) {
                 // 【防穿透】查库为空也缓存一个空对象（短 TTL），读取侧用 getId()==null 识别
                 redisTemplate.opsForValue()
                         .set(key, new UserVO(), NULL_TTL_SECONDS, TimeUnit.SECONDS);
                 return null;
             }
-            vo = new UserVO();
-            BeanUtils.copyProperties(user, vo);
-            vo.setNoteCount(noteMapper.selectCount(
-                    new LambdaQueryWrapper<Note>().eq(Note::getUserId, userId)).intValue());
-            vo.setFollowCount(followMapper.selectCount(
-                    new LambdaQueryWrapper<Follow>().eq(Follow::getUserId, userId)).intValue());
-            vo.setFansCount(followMapper.selectCount(
-                    new LambdaQueryWrapper<Follow>().eq(Follow::getFollowUserId, userId)).intValue());
             // 【防雪崩】TTL = 基础值 + 随机抖动，把大量 Key 的过期时刻打散
             long ttl = BASE_TTL_SECONDS + ThreadLocalRandom.current().nextLong(JITTER_SECONDS);
             redisTemplate.opsForValue().set(key, vo, ttl, TimeUnit.SECONDS);
             return vo;
         } finally {
-            // 简化版释放：生产环境建议用 Lua "比较值再删除" 防止误删别人的锁
-            redisTemplate.delete(lockKey);
+            redisLock.unlock(lockKey, token);
         }
+    }
+
+    /** 没抢到锁：短暂轮询等持锁者把缓存建好；始终没有则兜底查库 */
+    private UserVO waitForUserCacheOrLoad(Long userId, String key) {
+        for (int i = 0; i < LOCK_WAIT_RETRIES; i++) {
+            try {
+                Thread.sleep(LOCK_WAIT_INTERVAL_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+            UserVO cached = (UserVO) redisTemplate.opsForValue().get(key);
+            if (cached != null) {
+                return cached;
+            }
+        }
+        return loadUserFromDb(userId);
+    }
+
+    /** 从 DB 组装 UserVO（不含任何缓存逻辑，供重建与兜底共用） */
+    private UserVO loadUserFromDb(Long userId) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            return null;
+        }
+        UserVO vo = new UserVO();
+        BeanUtils.copyProperties(user, vo);
+        vo.setNoteCount(noteMapper.selectCount(
+                new LambdaQueryWrapper<Note>().eq(Note::getUserId, userId)).intValue());
+        vo.setFollowCount(followMapper.selectCount(
+                new LambdaQueryWrapper<Follow>().eq(Follow::getUserId, userId)).intValue());
+        vo.setFansCount(followMapper.selectCount(
+                new LambdaQueryWrapper<Follow>().eq(Follow::getFollowUserId, userId)).intValue());
+        return vo;
     }
 
     /** 关注列表 */

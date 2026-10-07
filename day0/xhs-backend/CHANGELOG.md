@@ -4,6 +4,50 @@
 
 ---
 
+## P3-2 / P3-3 / P3-4 / P3-5（2026-10-07）
+
+### P3-2 分布式锁释放带归属校验 + P3-5 抢锁失败改轮询
+
+**问题**：
+- 锁释放是直接 `DEL`。锁有 TTL，业务执行超过 TTL 时会过期并被别人抢到，此时 `DEL` 会把**别人的锁**删掉，互斥当场失效。
+- 没抢到锁时只 `Thread.sleep(50)` 一次就回源查库，等于把压力又打回 DB；`UserService` 更甚——它递归重入 `userInfo()`，在锁被长期持有时会**递归堆积**。
+
+**方案**：抽出 `common/RedisLock`（`tryLock` 返回唯一 token；`unlock` 用 Lua 比对 token 再删），
+两个服务（`NoteService` / `UserService`）统一改用；没抢到锁改为**有限次轮询**（5 × 20ms）等别人重建，
+始终没有才兜底查库。`UserService` 顺带把 VO 组装抽成 `loadUserFromDb()`，消除递归。
+
+**踩坑点（又一个序列化陷阱）**：token 与 Lua 都**必须走 `StringRedisTemplate`**。
+若用 JSON 序列化的 `RedisTemplate` 写 token，存进去是带引号的 `"uuid"`，而 Lua 的 ARGV 是裸 `uuid`
+→ 比对永远不相等 → **锁永远删不掉，只能干等 TTL 过期**（互斥范围被动扩大 10 秒）。
+
+**验证（已实测）**：
+- 重建后 `note:lock:1` = 0 —— 证明 token 与 Lua 的序列化成对正确（否则锁必残留）
+- 预先塞入外部 token 占锁，再请求 → 外部锁**仍在且值未被改动**（我方 Lua 不删别人的锁）
+- 锁被外部占着时 `/api/notes/2` 仍返回 200（轮询 + 兜底查库生效）
+
+### P3-3 收窄 Redis 反序列化白名单
+
+**问题**：`RedisConfig` 用 `LaissezFaireSubTypeValidator` 做 default typing —— **放行任意类型**。
+一旦缓存数据被篡改/注入，反序列化时可被用来构造 gadget 链（RCE）。
+
+**方案**：换成 `BasicPolymorphicTypeValidator` 白名单，只允许 `com.xhs.`（本项目 VO/实体）、
+`java.util.`（集合）、`java.time.`（LocalDateTime）；**刻意不放行 `java.lang.`**（`Runtime` 是经典 gadget）。
+
+**验证（已实测）**：`user:{id}`（UserVO）、`comment:list:{id}:1`（List<CommentVO>）、
+**空列表标记**、笔记详情、搜索、热榜全部正常读回 —— 白名单没有误伤正常类型。
+`./ci.sh` 9/9 通过。
+
+### P3-4 连接池显式配置
+
+`spring.datasource.hikari`：`maximum-pool-size: 20`（默认 10，压测并发下易被打满排队）、
+`minimum-idle: 5`、`connection-timeout: 3000` 等。
+**验证**：`/actuator/metrics/hikaricp.connections.max` = **20**。
+
+> Redis 侧未启用 Lettuce 连接池：Lettuce 默认在单条连接上多路复用、已足够，且连接池需额外引入
+> `commons-pool2`，主要收益在阻塞命令场景，本项目用不上，故不动。
+
+---
+
 ## P3-1 消除 N+1 Redis 往返（2026-10-07，先实测确认再修）
 
 ### 问题（由对照压测实测发现，不是纸面分析）

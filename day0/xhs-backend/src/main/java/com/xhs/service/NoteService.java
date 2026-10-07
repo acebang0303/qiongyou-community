@@ -2,6 +2,7 @@ package com.xhs.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xhs.common.RedisKeys;
+import com.xhs.common.RedisLock;
 import com.xhs.common.TransactionHelper;
 import com.xhs.config.RabbitConfig;
 import com.xhs.dto.NoteEvent;
@@ -47,6 +48,9 @@ public class NoteService {
     private static final long JITTER_SECONDS = 300;
     private static final long NULL_TTL_SECONDS = 60;
     private static final long LOCK_TTL_SECONDS = 10;
+    /** ★ P3-5：没抢到锁时的轮询次数与间隔（合计约 100ms），避免只睡一次就直接查库 */
+    private static final int LOCK_WAIT_RETRIES = 5;
+    private static final long LOCK_WAIT_INTERVAL_MS = 20;
 
     @Autowired
     private NoteMapper noteMapper;
@@ -57,6 +61,8 @@ public class NoteService {
     /** 互动类 Set/计数用 String 序列化读写，必须与 InteractService 的 Lua 写入侧成对 */
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private RedisLock redisLock;
     @Autowired
     private FeedService feedService;
     @Autowired
@@ -150,20 +156,17 @@ public class NoteService {
         return (NoteVO) redisTemplate.opsForValue().get(RedisKeys.note(id));
     }
 
-    /** 分布式锁互斥重建（Day5 逻辑，保持不变） */
+    /**
+     * 分布式锁互斥重建（Day5 逻辑）
+     * ★ P3-2：锁值改为唯一 token，释放走 Lua 比对归属（避免误删别人的锁）
+     * ★ P3-5：没抢到锁改为短暂轮询等别人重建，而不是睡一次就直接回源查库
+     */
     private NoteVO rebuildWithLock(Long id) {
         String lockKey = RedisKeys.noteLock(id);
-        Boolean locked = redisTemplate.opsForValue()
-                .setIfAbsent(lockKey, "1", LOCK_TTL_SECONDS, TimeUnit.SECONDS);
+        String token = redisLock.tryLock(lockKey, LOCK_TTL_SECONDS);
 
-        if (!Boolean.TRUE.equals(locked)) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            NoteVO vo = getFromCache(id);
-            return vo != null ? vo : noteMapper.selectDetail(id);
+        if (token == null) {
+            return waitForCacheOrLoad(id);
         }
 
         try {
@@ -181,8 +184,25 @@ public class NoteService {
             redisTemplate.opsForValue().set(RedisKeys.note(id), vo, ttl, TimeUnit.SECONDS);
             return vo;
         } finally {
-            redisTemplate.delete(lockKey);
+            redisLock.unlock(lockKey, token);
         }
+    }
+
+    /** 没抢到锁：短暂轮询等持锁者把缓存建好；始终没有则兜底查库 */
+    private NoteVO waitForCacheOrLoad(Long id) {
+        for (int i = 0; i < LOCK_WAIT_RETRIES; i++) {
+            try {
+                Thread.sleep(LOCK_WAIT_INTERVAL_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+            NoteVO cached = getFromCache(id);
+            if (cached != null) {
+                return cached;
+            }
+        }
+        return noteMapper.selectDetail(id);
     }
 
     /** 某个用户发布的笔记 */

@@ -3,7 +3,8 @@ package com.xhs.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,9 +30,16 @@ public class RedisConfig {
         Jackson2JsonRedisSerializer<Object> jsonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper om = new ObjectMapper();
         om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        // 写入类型信息，取出时才能还原成 NoteVO 等具体类型
-        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
-                ObjectMapper.DefaultTyping.NON_FINAL);
+        // 写入类型信息，取出时才能还原成 NoteVO 等具体类型。
+        // ★ P3-3：默认 typing **必须收窄白名单**——原来用的 LaissezFaireSubTypeValidator 放行任意类型，
+        // 一旦缓存数据被篡改/注入，反序列化时可被用来构造 gadget 链（RCE）。
+        // 这里只信任本项目的类型与 JDK 集合/时间类型；刻意不放行 java.lang.（如 Runtime 是经典 gadget）。
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("com.xhs.")
+                .allowIfSubType("java.util.")
+                .allowIfSubType("java.time.")
+                .build();
+        om.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
         // 支持 LocalDateTime
         om.registerModule(new JavaTimeModule());
         jsonSerializer.setObjectMapper(om);

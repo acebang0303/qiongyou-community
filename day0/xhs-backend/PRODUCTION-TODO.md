@@ -205,14 +205,18 @@
   - `NoteService.fillStatus` 对列表每条笔记逐个 `isMember`；`mergeCounts` 逐个 `get`。列表 10 条 = 30+ 次往返。
   - 改 pipeline 批处理，或 `SMISMEMBER` / `MGET`。
 
-- [ ] **P3-2 锁释放改 Lua 比较值再删** ｜ S
-  - `NoteService`/`UserService` 直接 `delete(lockKey)`，存在误删他人锁隐患（手册 Day5 已点名）。
+- [x] **P3-2 锁释放改 Lua 比较值再删** ｜ S ｜ ✅ 2026-10-07 — 抽出 `common/RedisLock`（token + Lua 归属校验）；`NoteService`/`UserService` 统一改用
+  - 验收：重建后锁被正确删除（证明 token 与 Lua 序列化成对）；外部占用锁时我方不误删
+  - 详情见 [CHANGELOG.md](CHANGELOG.md#p3-2--p3-3--p3-4--p3-52026-10-07)
 
-- [ ] **P3-3 收窄 Redis 反序列化** ｜ M
-  - `RedisConfig` 用了 `activateDefaultTyping(LaissezFaireSubTypeValidator)`，已知反序列化 gadget 风险。收窄白名单或改显式类型 JSON。
+- [x] **P3-3 收窄 Redis 反序列化** ｜ M ｜ ✅ 2026-10-07 — `BasicPolymorphicTypeValidator` 白名单（`com.xhs.`/`java.util.`/`java.time.`，不放行 `java.lang.`）
+  - 验收：user/评论列表/空列表标记/详情/搜索/热榜均正常读回；`ci.sh` 9/9
 
-- [ ] **P3-4 连接池调优** ｜ S — HikariCP / Lettuce 全用默认值，需按压测结果调参。
-- [ ] **P3-5 抢锁失败改轮询重试** ｜ S — `Thread.sleep(50)` 阻塞请求线程，改为有限次轮询重读缓存。
+- [x] **P3-4 连接池调优** ｜ S ｜ ✅ 2026-10-07 — HikariCP 显式配置（max=20/min=5/timeout=3s）；Actuator 指标确认生效
+  - Redis 侧未启用 Lettuce 连接池（单连接多路复用已足够，池化需额外依赖且主要利于阻塞命令）
+
+- [x] **P3-5 抢锁失败改轮询重试** ｜ S ｜ ✅ 2026-10-07 — 5×20ms 轮询后再兜底查库；`UserService` 顺带消除递归重入
+  - 验收：锁被外部占用时接口仍正常返回数据
 
 ---
 
