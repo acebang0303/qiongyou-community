@@ -1,0 +1,16 @@
+# ---- 构建产物 ----
+target/
+*.class
+*.log
+
+# ---- 前端依赖（此前被误提交，已用 git rm --cached 取消跟踪）----
+node_modules/
+
+# ---- IDE / 编辑器 ----
+.idea/
+*.iml
+.vscode/
+
+# ---- 操作系统 ----
+.DS_Store
+Thumbs.db
