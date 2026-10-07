@@ -1,0 +1,684 @@
+# CHANGELOG — xhs-backend 生产化改造
+
+记录每个 P0/P1/P2/P3 任务的改动设计、踩坑点与验证方式。任务定义见 [PRODUCTION-TODO.md](PRODUCTION-TODO.md)。
+
+---
+
+## P2-4 多环境配置（2026-10-07）
+
+### 问题
+地址、账号密码全写死在 `application.yml`，没有 profile，改环境只能改代码。
+
+### 方案
+- `application.yml`：**公共配置**；环境相关项一律 `${ENV:默认值}` 占位（默认值 = 本地开发值，保证开箱能跑）
+  DB_URL / DB_USERNAME / DB_PASSWORD / REDIS_HOST / REDIS_PORT / RABBITMQ_* / JWT_SECRET / ES_BASE_URL / SERVER_PORT
+- `application-dev.yml`：打印 SQL、`com.xhs: debug`、health `show-details: always`
+- `application-prod.yml`：关闭 SQL 打印、`com.xhs: info`、health `show-details: never`
+- `spring.profiles.active: ${SPRING_PROFILES_ACTIVE:dev}`（默认 dev）
+
+### 改动文件
+- `src/main/resources/application.yml`（改为占位符 + 公共项）
+- `src/main/resources/application-dev.yml`【新增】
+- `src/main/resources/application-prod.yml`【新增】
+
+### 踩坑点
+- **占位符必须带默认值**：只写 `${DB_PASSWORD}` 而没默认值，本地直接启动会因缺变量失败（`${DB_PASSWORD:123456}` 才是"可覆盖但不强制"）。
+- **哪些配置属于哪个 profile 要想清楚**：日志级别、SQL 打印、health 细节这类"环境差异"放 profile；端口、连接串、密钥这类"环境相关"用占位符放公共文件。二者是两回事。
+- 测试不受影响：`@SpringBootTest` 里用 `properties=` 覆盖的值优先级高于 profile 文件。
+
+### 验证（已实测）
+```
+SPRING_PROFILES_ACTIVE=prod SERVER_PORT=8082 mvn spring-boot:run
+```
+- 日志 `The following 1 profile is active: "prod"`、端口被环境变量改到 8082
+- 触发查询后 `==> Preparing:` 计数为 **0**（prod 不打印 SQL）
+- `/actuator/health` 只返回 `{"status":"UP"}`（无组件细节）
+- `mvn test` 仍 9/9 全绿（dev 默认 profile 下 SQL 打印照常）
+
+---
+
+## P2-2 核心集成测试（Testcontainers）（2026-10-07）
+
+### 问题
+`src/test` 不存在，零测试。项目最核心的逻辑（Lua 原子幂等、缓存重建/防穿透、对账）都依赖真实 Redis/MySQL，纯 mock 测不到。
+
+### 方案
+Testcontainers singleton 容器 + `@SpringBootTest`：
+- 临时容器：MySQL 8.0（用 `init.sql` 建库灌种子）、Redis 7、RabbitMQ 3.12
+- **ES 不启容器**：把 `xhs.es.base-url` 指向不可达端口 `http://localhost:1`，既完全隔离，又顺带覆盖「ES 不可用 → 回退 MySQL」降级路径
+- 定时任务通过新增的可配置延迟调到 1 天后执行，避免测试期间并发改动 Redis/热榜
+
+测试覆盖（9 个用例，全绿）：
+| 测试类 | 覆盖 |
+|---|---|
+| `InteractServiceTest` | Lua 幂等：重复点赞只 +1、取关后可再赞、**100 并发点赞只产生 1 条关系**、并发取关不变负 |
+| `NoteCacheTest` | 缓存三兄弟：未命中回源 + 正常 TTL、**空对象缓存防穿透**（含 60s 短 TTL 断言）、命中缓存 |
+| `ReconcileTaskTest` | 对账：Redis 清空后按 MySQL 回填、重复执行幂等 |
+
+### 改动文件
+- `pom.xml`：testcontainers `junit-jupiter/mysql/rabbitmq`（**需显式版本**）+ `maven-resources-plugin` 把 `../sql/init.sql` 拷进 test classpath
+- `src/test/java/com/xhs/AbstractIntegrationTest.java`【新增】：容器与动态属性
+- `src/test/java/com/xhs/service/{InteractServiceTest,NoteCacheTest,ReconcileTaskTest}.java`【新增】
+- `ReconcileTask` / `HotRankTask`：`@Scheduled` 延迟改为可配（`initialDelayString`）
+- `EsService`：ES 地址改为可配 `xhs.es.base-url`（默认还是 `http://localhost:9200`）
+
+### 踩坑点
+1. **Spring Boot 2.7 的 BOM 不含 testcontainers**：不加 `<version>` 直接 `'dependencies.dependency.version' ... is missing` 构建失败。需自己定版本（用 1.19.8，Java 8 兼容）。
+2. **不要在基类上用 `@Container` 声明静态容器**：`@Testcontainers` 扩展会**每个测试类重启一次容器 → 映射端口变了**，而 Spring 上下文是跨类缓存的、`@DynamicPropertySource` 只在首次建上下文时求值 → 第二个测试类连的是**已失效的旧端口**，报 `Redis command timed out after 3 second(s)`。
+   改用 **singleton 容器模式**（静态块里 `start()`，不标注解），容器全 JVM 存活、端口稳定。改前 5 个用例超时，改后全绿且后续类只需 0.1~0.3s。
+3. **`init.sql` 不复制副本**：用 maven-resources-plugin 从 `../sql/init.sql` 拷到 test classpath，保持"脚本唯一真源"（呼应 P0-1）。
+4. **定时任务会污染测试**：`ReconcileTask` 会把种子数据回填进 Redis，导致「断言 SCARD==1」之类的用例失败 → 把延迟做成可配置并在测试里调成 1 天。
+
+### 验证（已实测）
+`mvn test` → `Tests run: 9, Failures: 0, Errors: 0`，BUILD SUCCESS。
+
+---
+
+## P2-1 引入 Actuator（健康检查 + 指标）（2026-10-07）
+
+### 问题
+项目没有任何健康检查/指标端点，"生产化"缺少可验证的抓手。
+
+### 方案
+- `pom.xml` 加 `spring-boot-starter-actuator`
+- 只暴露 `health,info,metrics`（**不暴露** `env/beans/heapdump` 等敏感端点）
+- 新增 `EsHealthIndicator`：ES 用 RestTemplate 直连、Boot 无内置指标，补一个自定义 `HealthIndicator`
+
+### 改动文件
+- `pom.xml`：新增 actuator 依赖
+- `application.yml`：`management.endpoints.web.exposure.include` + `show-details: always` + `info.app.*`
+- `service/EsHealthIndicator.java`【新增】
+
+### 踩坑点
+- **ES 没有内置 health 指标**：MySQL(DataSource)、Redis、RabbitMQ 都由 Boot 自动装指标，ES 因为走 RestTemplate 直连而被漏掉 → 必须自己写 `HealthIndicator`。
+- **ES DOWN 会让整体 health 变 DOWN**：本应用对 ES 是**降级可用**的（搜索回退 MySQL），所以严格说 ES 不该拖垮就绪状态。生产可用 health group 把 ES 排除在 liveness/readiness 之外。当前未做（保持简单），但要知道这个取舍。
+- **不要暴露全部端点**：`exposure.include: "*"` 会把 `env`（含配置与密钥）、`heapdump` 等暴露出来；本项目又没接 Spring Security，等于公网可读。
+
+### 验证（已实测）
+```
+GET /actuator/health  → {"status":"UP", components: {db,diskSpace,es{documents:20},ping,rabbit,redis} 均 UP}
+GET /actuator/info    → {"app":{name,description,java,spring-boot}}
+GET /actuator/env     → 404（未暴露）
+GET /actuator/metrics → 70 个指标
+```
+故障演练：`docker stop xhs-elasticsearch` → `es` 变 `DOWN`、overall `DOWN`；`docker start` 后自动恢复 `UP`。
+
+---
+
+## P1-14 ES 接入 IK 分词（2026-10-07）
+
+### 问题
+索引三字段都是默认 `standard` 分词器，中文被**按单字切分**（"三亚"→"三","亚"），搜索质量差。
+
+### 方案
+- 容器装 `analysis-ik 8.8.2`（`docker exec xhs-elasticsearch bin/elasticsearch-plugin install -b https://get.infini.cloud/elasticsearch/analysis-ik/8.8.2`）并重启
+- mapping 三字段改为 `analyzer: ik_max_word`（建索引）+ `search_analyzer: ik_smart`（搜索）
+- **附带修正**：`multi_match` 加 `"operator": "and"`
+
+### 为什么必须加 operator=and
+IK 词典未必收录业务词（如「清补凉」），此时 `ik_smart` 会退化成单字 `["清","补","凉"]`；
+而 `multi_match` 默认 `operator=or` → **只要命中其中一个字就算匹配**。
+实测：搜「清补凉」ES 返回 3 条，而 MySQL 精确子串只有 2 条——多出的那条只含「凉」。
+加 `and` 后要求全部分词命中，结果与精确匹配一致。
+
+### 踩坑点
+- **插件装在容器里、不在镜像里**：`docker compose down/up` 重建容器会丢失，需重装（建议写进 Dockerfile）。
+- **换分词器必须重建索引**：`analyzer` 是**建索引时**生效的，改 mapping 对已有索引无效，必须删除索引重建 + 回填（正好由 P1-15 承接）。
+- **别用中文做 shell 传参**：`curl -d '{...中文...}'` 在中文 Windows 上会按 GBK 发出，ES 报 `Invalid UTF-8`。验证脚本改用 Python 发送。
+
+### 验证（已实测）
+```
+standard   : 三亚三天两夜超全攻略 → 10 个单字
+ik_smart   : 三亚三天两夜超全攻略 → 5 个词
+ik_max_word: 三亚三天两夜超全攻略 → 12 个词
+```
+搜「三亚」6 条、与 MySQL 精确匹配数一致；搜「清补凉」由 3 条（误召回）修正为 2 条。
+
+---
+
+## P1-15 ES 存量数据回填（2026-10-07）
+
+### 问题
+索引重建（如换分词器）后没有程序化的数据恢复手段，只有手工 `day8/notes-backfill.ndjson`。
+
+### 方案
+`EsBackfillRunner`（`@Order(3)`）：启动时 `ensureIndex()` → `count()`，为 0 则从 MySQL 全量 `_bulk` 回填。
+- 自带 `ensureIndex()`：本 Runner 的 order 早于无 `@Order` 的 `EsInitRunner`，必须自己保证索引存在
+- `EsService` 新增 `count()` 与 `bulkIndex(List<Note>)`（用 `ObjectMapper` 生成 NDJSON）
+
+### 验证（已实测）
+删除索引后重启：日志 `ES 索引 xhs_notes 创建成功（IK 分词）` + `ES 批量回填 20 篇笔记`；ES 文档数 == MySQL（20）。
+
+---
+
+## P1-16 ES 深分页 from/size → search_after（2026-10-07）
+
+### 问题
+搜索用 `from/size`，深分页时 ES 需在每个分片上取 `from+size` 条再归并，页越深越贵。
+
+### 方案
+游标分页（`search_after`）：
+- 排序 `[{_score: desc}, {note_id: asc}]`（相关度优先 + 唯一 tiebreaker 保证翻页不重不漏）
+- 响应返回 `nextCursor`（本页最后一条的排序值 `score:noteId`），客户端下次原样传回 `cursor`
+- API 由 `Result<List<NoteVO>>` 改为 `Result<SearchPageVO{list, nextCursor}>`；前端搜索页加「加载更多」
+- ES 降级到 MySQL 时无游标语义 → 只返回第一页（`nextCursor=null`）
+
+### 踩坑点（本次卡住最久的一个）
+- **ES 8 默认禁止对 `_id` 排序**：`{"_id":"asc"}` 会报
+  `Fielddata access on the _id field is disallowed`，整个 `_search` 400。
+  **而这个 400 被 `NoteService` 的 try/catch 吞掉、静默降级到 MySQL**——表面上"有结果返回"，实际根本没走 ES。
+  解法：索引里加一个 `note_id`（long）字段专门做排序 tiebreaker。
+  **教训**：降级兜底会让上游故障"看起来很健康"，验证时必须确认走的是主路径（本次靠"响应里有没有游标"区分出来）。
+- `search_after` 的游标值**类型必须与 sort 字段一致**（score 是 double、note_id 是 long），所以游标解析时分别用 `Double.parseDouble` / `Long.parseLong`。
+
+### 验证（已实测）
+搜「三亚」`size=2` 逐页：`[16,3]` → `[1,6]` → `[17,8]` → `[]`，共 6 条、去重后仍是 6、**无重复无遗漏**；`nextCursor` 由 ES 返回（证明走的是 ES 主路径而非降级）。
+
+---
+
+## P1-13 限流改为按用户维度（2026-10-07）
+
+### 问题
+`RateLimitInterceptor` 原是**全局窗口**（`rate:limit:like:{秒}`），所有用户共用一个桶；且它注册在 `AuthInterceptor` **之前**，拿不到 `userId`。
+
+### 方案
+- **调整拦截器顺序**：auth 在前（写入 `UserContext`），限流在后 —— 这样限流才能按用户
+- **Key 加主体维度**：`rate:limit:{u:userId | ip:IP}:{分类}:{秒}`；登录用户按 userId，匿名按来源 IP（否则匿名请求全挤一个桶）
+- **阈值改单用户量级且 yml 可配**：`xhs.rate-limit.{like:20, comment:5, search:10, default:50}`（评论 5/秒是 Day8 选做挑战的指定值）
+
+### 改动文件
+- `application.yml`：新增 `xhs.rate-limit.*`
+- `config/WebConfig.java`：auth 拦截器提到限流之前
+- `ratelimit/RateLimitInterceptor.java`：阈值改为 `@Value` 注入；Key 拼 principal；新增 `clientIp()`（优先 `X-Forwarded-For` 第一段）
+
+### 踩坑点
+- **拦截器顺序即依赖顺序**：限流要用身份，就必须排在认证之后。反过来（限流在前）也能跑，但拿不到 userId，只能退化成全局/IP 维度。
+- 代价：认证前不再限流。这里可接受（JWT 验签很轻），生产中若担心可再加一层纯 IP 的前置限流。
+- **调大阈值 ≠ 按用户维度**：原全局阈值（点赞 1000/秒）换成单用户后若沿用，等于放宽了两个数量级、基本限不住。必须换成单用户量级。
+
+### 验证（已实测）
+> `mvn spring-boot:run "-Dspring-boot.run.jvmArguments=-Dxhs.rate-limit.search=3" "-Dspring-boot.run.arguments=--server.port=8081"`
+
+- user1 并发 10 次搜索 → **3× 200 + 7× 429**
+- user2 并发 3 次 → **3× 200**（各用户独立计桶）
+- Redis key：`rate:limit:u1:search:<秒>`、`rate:limit:u2:search:<秒>`
+
+### 附带修复（本次暴露的两个真问题）
+1. **Maven 源码编码未声明** → 中文 Windows 下 `javac` 按 GBK 读 UTF-8 源码，报「非法字符」；之前一直没暴露是因为 `target/classes` 里的 class 是 IDE 编的、Maven 增量判定跳过编译。已在 `pom.xml` 显式声明 `<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>`（及 reporting 编码），并首次跑通 `mvn clean compile`。
+2. **javadoc 里写了 `*/`**：注释中的路径 `/api/notes/**/like` 含 `*/`，会**提前终止块注释**，后续中文被当作代码 → 「非法字符」。已把路径改为 `/api/notes/{id}/like`。**不要在注释里写含 `*/` 的路径**。
+
+---
+
+## P1-11 + P1-12 热度时间衰减 & 热榜定时重算（2026-10-07）
+
+### 问题
+`HotService.addHeat` 是纯 `ZINCRBY` 累加，**只增不减** → 早期爆款永久霸榜；且实时累加的误差无处修正。
+
+### 方案
+两项本质是同一个定时任务，合并实现——定时按「基础分 × 时间衰减」整体重写 `hot:notes`：
+
+```
+base  = like×1 + comment×5 + favorite×2          （基础分，直接取 DB 真实计数）
+score = base × 0.5 ^ (龄期小时 / 半衰期小时)      （半衰期指数衰减，默认 12h）
+```
+
+- `@Scheduled(initialDelay=30s, fixedDelay=10min)`
+- 与实时 `addHeat` **并存**：重算负责「纠偏 + 衰减」，`addHeat` 负责「立刻可见」；重算覆盖写时会把期间的实时增量按 DB 真实计数一并纳入
+
+### 改动文件
+- `application.yml`：新增 `xhs.hot.half-life-hours: 12`
+- `service/HotService.java`：新增 `setScore(noteId, score)`（覆盖写）
+- `service/HotRankTask.java`【新增】：定时重算 + 衰减
+
+### 踩坑点 / 已知局限
+- **衰减到极小值后，实时 `addHeat` 的"跳变"会被放大**：老笔记的基础分衰减到 ~1e-27，此时一次点赞的 `ZINCRBY +1` 会让它瞬间冲到榜首，直到下一次重算（≤10 分钟）拉回。彻底解决要么让 `addHeat` 按龄期加权、要么缩短重算周期；当前按「生产常见做法：定期重算 + 接受区间内漂移」处理。
+- **本项目内容都太老**（种子笔记约 45 天龄），衰减后半衰期 12h 下几乎所有分数都趋近 0，榜单排序区分度低——调大 `half-life-hours` 可缓解。
+- 重算与 `InitHotRunner` 有重叠：`InitHotRunner` 只在榜单为空时按未衰减的基础分冷启动，30 秒后就会被本任务覆盖。保留它是为了对齐 Day7 手册，二者可择一。
+
+### 验证（已实测）
+- 日志：`【热榜重算】20 篇笔记已按半衰期 12.0 小时衰减重算`
+- 逐条比对 `ZSCORE hot:notes` 与按公式算出的期望值：**8/8 完全吻合**（误差在第 6 位有效数字内）
+  `note 1: base=40 age=1144.8h expected=7.6481e-28 actual=7.6499e-28 OK`
+
+---
+
+## P1-10 Feed 收件箱裁剪（2026-10-07）
+
+### 问题
+`feed:{userId}` / `feed:outbox:{authorId}` 只增不减，长期无限膨胀（Redis 内存）。
+
+### 方案
+每次写入后按排名裁剪，只保留最新 `xhs.feed.keep` 条（默认 100，yml 可配）：
+`ZREMRANGEBYRANK key 0 -(keep+1)` —— 保留 score 最大的 keep 条，删掉更旧的。
+
+### 改动文件
+- `application.yml`：新增 `xhs.feed.keep: 100`
+- `service/FeedService.java`：新增 `trim(key)`；`pushNote` 写发件箱后裁一次、写每个粉丝收件箱后各裁一次
+
+### 踩坑点
+- **裁剪是"每次写都做"**：普通作者发布时，每个粉丝的收件箱都会多一次 `ZREMRANGEBYRANK`，写放大从「1 次 ZADD」变「1 次 ZADD + 1 次裁剪」。条数很少时开销可忽略，粉丝量极大时可考虑改为定时批量裁剪。
+- **裁剪会丢历史**：超过 keep 条的旧笔记不再出现在关注页——这是有意的（收件箱本来就是"最近动态"），但要想清楚 keep 的取值。
+- **裁剪不影响兜底**：收件箱被裁空后，`followFeed` 会自动回落到 MySQL 联表查询，不会白屏。
+
+### 验证（已实测）
+> 运行：`mvn spring-boot:run "-Dspring-boot.run.jvmArguments=-Dxhs.feed.keep=2" "-Dspring-boot.run.arguments=--server.port=8081"`
+
+- user 7 连发 4 篇后：`ZCARD feed:2` = 2（原本 7，被裁到 2）、`ZCARD feed:outbox:7` = 2
+- `ZRANGE feed:2 0 -1` 只留最新的 `28 29`，最早的两条被裁掉
+- 测试笔记与 ZSet/ES 数据已清理
+
+---
+
+## P1-9 大V推拉结合（2026-10-07）
+
+### 问题
+`FeedService.pushNote` 无条件把新笔记写进**每个粉丝**的收件箱（写扩散）。粉丝越多写越贵，千万粉大V发布一次就是千万次写。
+
+### 方案
+**作者发件箱 + 大V只写自己、粉丝读时来拉（推拉结合）**
+
+```
+发布:  写 feed:outbox:{authorId}  (1 次)
+       ├─ 粉丝数 <= 阈值: 再推给每个粉丝 feed:{fanId}   (推模式)
+       └─ 粉丝数 >  阈值: 不再推（拉模式）
+
+读关注页: 合并「feed:{me}」 + 所关注大V的「feed:outbox:{bigV}」→ 按 score 倒序分页
+```
+
+- 阈值 yml 可配：`xhs.feed.big-v-fans-threshold`（默认 1000）
+- 大V判定：`SELECT COUNT(*) FROM t_follow WHERE follow_user_id=?` 与阈值比较
+
+### 改动文件
+- `common/RedisKeys.java`：新增 `feedOutbox(authorId)` → `feed:outbox:{id}`
+- `application.yml`：新增 `xhs.feed.big-v-fans-threshold`
+- `mapper/FollowMapper.java`：新增 `selectBigVFolloweeIds(userId, threshold)`（我关注的、且粉丝数超阈值的用户）
+- `service/FeedService.java`：`pushNote` 写发件箱 + 按阈值决定是否推；`feedIds` 改为「收件箱 + 大V发件箱」归并排序分页
+
+### 设计说明（为什么用 outbox ZSet 而不是读时查库）
+拉模式常见的实现是「读时查作者最新笔记」。这里改用**每个作者一个 outbox ZSet**（发布时只写 1 条）：
+- 归并排序时两个来源的 score 都是毫秒时间戳，**避免了 DB `create_time`（秒精度、需处理时区）与 Redis score 混排的麻烦**
+- 大V 的写入成本从「粉丝数」降到「1」
+
+### 踩坑点
+- **推拉归并的分页是"快照式"的**：先取两个来源各 `page*size` 条再归并切片，数据在翻页过程中变动时可能出现重复/遗漏。这是所有 Feed 分页的通病（时间线不断有新数据），本项目可接受。
+- **阈值必须可配**：本项目最大粉丝数才 6，写死 1000 的话大V分支永远进不去、没法验证也不能演示。
+
+### 验证（已实测）
+> 运行：`mvn spring-boot:run "-Dspring-boot.run.jvmArguments=-Dxhs.feed.big-v-fans-threshold=3" "-Dspring-boot.run.arguments=--server.port=8081"`
+> （注意：`spring-boot.run.arguments` 的逗号分隔在 CLI 上不生效，多个覆盖项要用 `jvmArguments` 传系统属性）
+
+阈值=3 时 user 2（6 粉）为大V、user 7（2 粉）为普通：
+- 大V发布 → `feed:1` 无该笔记（未推）、`feed:outbox:2` 有；user1 的关注页**首条即该笔记**（拉到了）；日志 `作者 2 粉丝数 6 超过阈值 3，走拉模式`
+- 普通发布 → `feed:2`、`feed:5` 都有（已推）
+- 测试笔记与 ZSet/ES 数据已清理
+
+---
+
+## P1-3 关注/取关后失效 user:{id} 缓存（2026-10-07）
+
+### 问题
+`user:{id}` 缓存里含 `followCount` / `fansCount`，但 `InteractService.follow` / `unfollow` 只写 MySQL，从不碰缓存 → 关注后双方主页数字最长陈旧 30 分钟。
+
+### 方案
+关注是**双向影响**：我 `followCount`+1、对方 `fansCount`+1，所以**两个 key 都要删**。用标准 Cache-Aside 的写失效：
+- `follow` 插入成功后 → 删 `user:{userId}` + `user:{targetUserId}`
+- `unfollow` 删除行数 > 0 时才删（无变化不必惊动缓存）
+- 关注本身是 MySQL 同步写，缓存下次读取时按 DB 重建，天然新鲜
+
+### 改动文件
+- `service/InteractService.java`：`follow`/`unfollow` 成功后调用新增私有方法 `evictUserCache(...)`；复用已有的 `stringRedisTemplate`（key 由 `StringRedisSerializer` 编码，两个 template 的 DEL 等价，无需再注入一个）
+
+### 踩坑点
+- **双向关系容易漏删一半**：只删自己的 `user:{me}` 会漏掉对方的 `user:{target}`，对方的 `fansCount` 依旧陈旧。凡是"关系型"写操作，都要把受影响的两个主体都失效。
+- 删除 key 用哪个 RedisTemplate 都行（key 序列化器相同），不必为了删缓存再注入一个 JSON 的 `RedisTemplate`。
+
+### 验证（已实测）
+- 预热 `user:6` / `user:4` 缓存（`EXISTS=1`）
+- user 6 关注 user 4 → 两个 key 都变 `EXISTS=0`
+- `GET /api/users/4` → `fansCount` 0 → 1；`GET /api/users/6` → `followCount` 1 → 2
+- 取关后 `fansCount` 还原为 0（测试关系已回滚）
+
+---
+
+## P1-7 对账定时任务（+ 顺带修复「已点赞」状态 bug）（2026-10-07）
+
+### 问题
+1. 手册要求：`SCARD like:{id}` 与 `COUNT(t_note_like)` 对账，是"最终一致"故事的闭环，原本没有。
+2. 实测发现 Redis 里互动数据几乎全空（`SCARD=0`、`count=nil`），而 MySQL 有种子数据 → 冷启动/种子未同步。
+3. **顺带暴露一个真 bug**：`NoteService.fillStatus` 用 `redisTemplate`（JSON 序列化）做 `isMember`，会把成员 `"3"` 序列化成带引号的 `"3"`，与写侧（Lua / `StringRedisTemplate` 写入的裸 `3`）对不上 → **所有"已点赞/已收藏"状态恒为 false**。之前 Redis 为空所以没暴露。
+
+### 方案
+**以 MySQL 为准，对 Redis 做「只增不删」的增量回填**
+- 对每类互动（like / favorite / share）：读全表 → 按 noteId 分组 → `SADD` MySQL 里的成员 → 计数对齐为 Set 实际基数
+- **不整体重建（不 DEL）**：本项目是「Redis 先写 → MQ → MySQL」，对账那一刻可能有"已写 Redis、消息还在队列里"的关系，整体重建会误删在途数据
+- 用 `StringRedisTemplate`（与写侧同序列化）
+- `@Scheduled(initialDelay=10s, fixedDelay=10min)`
+
+**顺带修复**：`fillStatus` / `mergeCounts` 改用 `StringRedisTemplate`，读写序列化成对。
+
+### 改动文件
+- `XhsApplication.java`：加 `@EnableScheduling`
+- `service/ReconcileTask.java`【新增】：对账任务
+- `service/NoteService.java`：`fillStatus` / `mergeCounts` 改用 `StringRedisTemplate`（**bug 修复**）
+
+### 踩坑点
+- **同一批 key 读写必须用同一种序列化器**：写侧从 `RedisTemplate`(JSON) 换成 `StringRedisTemplate` 后，读侧 `isMember` 忘了换，成员变成 `"3"` vs `3`，静默失配——不报错、只是恒 false，极难发现。（呼应既有经验：互动类 Set 必须整体用 StringRedisTemplate）
+- **计数读取"看起来正常"具有欺骗性**：`mergeCounts` 用 JSON 读裸数字 `7`，Jackson 恰好能解析成 Integer，所以计数一直是对的；只有 Set 成员比对因为按字节/字符串比较才暴露。**不能因为一个读路径正常就认为另一个也正常**。
+- **只增不删的取舍**：能安全修复"MySQL 有、Redis 无"，但修不了"Redis 有、MySQL 无"（消息丢失/进 DLQ）——后者需人工看 DLQ 处理。
+
+### 验证（已实测）
+- 对账首轮：`【对账】点赞 noteId=1 Redis 集合 0 → 7` 等，Redis 被按 MySQL 回填；`SCARD like:1=7`、`like:count:1=7`
+- 对账第二轮：`回填 0 个不一致集合`（幂等）
+- 修复后接口：用户 3（种子里赞过 note 1）`GET /api/notes/1` → `liked=true`；用户 2（未赞）→ `false`
+
+---
+
+## P1-6 配置死信队列 DLX（2026-10-07）
+
+### 问题
+5 个队列都没有 DLX，消费者抛异常后 `default-requeue-rejected` 默认 `true` → **失败消息无限重投**，一条坏消息能永久堵住队列（`EsConsumer` 的 `throw e` 注释里已自认）。
+
+### 方案
+**每条业务队列一个 DLQ + 本地重试耗尽后进死信**
+
+```
+xhs.exchange (topic)                         xhs.dlx (direct)
+  like.db.#        → like.db.queue     ─┐
+  favorite.db.#    → favorite.db.queue  ├─ x-dead-letter-routing-key = 队列名
+  share.db.#       → share.db.queue     │
+  comment.notify.# → comment.notify.queue
+  note.es.#        → note.es.queue     ─┘
+                                          → like.db.dlq / favorite.db.dlq /
+                                            share.db.dlq / comment.notify.dlq / note.es.dlq
+```
+
+- 队列参数：`x-dead-letter-exchange=xhs.dlx` + `x-dead-letter-routing-key=<队列名>`
+- 重试：`listener.simple.retry` 3 次（1s/2s 退避）；耗尽后 `MessageRecoverer` 记录日志并抛 `AmqpRejectAndDontRequeueException` → 拒绝且不重回 → 进 DLQ
+- `default-requeue-rejected: false`：非重试路径的异常也拒绝而非无限重投
+
+### 改动文件
+- `config/RabbitConfig.java`：新增 `xhs.dlx` + 5 个 DLQ + 5 条绑定；5 个业务队列加 DLX 参数；新增 `MessageRecoverer` Bean（记日志 + 拒绝）
+- `application.yml`：新增 `listener.simple.retry` 与 `default-requeue-rejected: false`
+
+### 踩坑点（重要，运维必读）
+- **RabbitMQ 队列参数不可变**：给已存在的队列换参数（如加 `x-dead-letter-exchange`）会报
+  `PRECONDITION_FAILED - inequivalent arg ... received 'xhs.dlx' but current is none`，应用起不来。必须**先删除旧队列**（无积压时无损失）再让应用重建。
+- **同一套 broker 上跑着旧版本实例会"复活"旧拓扑**：删掉队列后，旧实例（8080）因 Spring AMQP 连接恢复会自动按旧参数重新声明队列，把新拓扑顶掉。**改队列参数时必须确保没有旧实例在跑**。
+- 死信消息**不会被自动消费**，需人工/运维查看 `*.dlq`；生产应配告警（当前仅落在队列里）。
+- 本地重试是**在应用内存中**做的（`stateless`），应用重启会丢失重试进度（消息仍在原队列，会被重新投递）。
+
+### 验证（已实测）
+投递一条必然失败的消息 `{"noteId":1,"userId":null,"liked":true}` 到 `like.db.save`：
+- 日志：`【MQ 消费失败→死信】body={...}, cause=...threw exception`
+- 结果：`like.db.queue=0`、`like.db.dlq=1`
+- 回归：投递正常消息（`like.db.cancel` 不存在的关系）能被正常消费，`like.db.queue` 回到 0、DLQ 不增长
+- 测试死信已 purge
+
+---
+
+## P1-5 开启 publisher confirm + returns（2026-10-07）
+
+### 问题
+手册 Day6 明说发布端确认「未开启」；消息发出去后是否到达交换机 / 能否入队，应用层完全无感知。
+
+### 方案
+开启 Spring AMQP 的发布端可靠性三件套，并注册回调把失败"变得可见"：
+
+| 配置 | 作用 |
+|---|---|
+| `publisher-confirm-type: correlated` | 消息是否到达交换机（异步确认） |
+| `publisher-returns: true` + `template.mandatory: true` | 路由不到任何队列时退回，而不是静默丢弃 |
+
+回调语义：
+- `ConfirmCallback(ack=false)` → 消息**没到交换机**（真丢了）
+- `ConfirmCallback(ack=true)` → 只代表到了交换机，**不代表入队**
+- `ReturnsCallback` → 到了交换机但**路由不到队列**，携带 exchange / routingKey / replyText / body
+
+### 改动文件
+- `application.yml`：新增 `publisher-confirm-type` / `publisher-returns` / `template.mandatory`
+- `config/RabbitConfirmConfig.java`【新增】：构造器里给 `RabbitTemplate` 注册两个回调并打日志
+- 发送侧补 `CorrelationData`（可读 id，便于定位失败消息）：
+  `InteractService`（like/favorite/share）、`CommentService`（comment.notify）、`NoteService`（note.es）
+
+### 踩坑点
+- **回调不要写在 `RabbitConfig` 里注入 RabbitTemplate**：`RabbitTemplate` 是 Boot 自动装配的，用户 `@Configuration` 注入它存在 Bean 创建时序问题。改成独立的 `@Component` 用**构造器注入** `RabbitTemplate`，Spring 会保证模板先就绪。
+- **`mandatory` 必须显式开**：只开 `publisher-returns` 不开 `template.mandatory`，不可路由的消息会被 broker 静默丢弃，`ReturnsCallback` 不触发。
+- **`correlated` 确认类型要配 `CorrelationData`**：不传的话回调拿到的 `correlationData` 为 null，日志无法定位是哪条消息。
+- 回调只负责"失败可见"，**真正的补偿是对账任务（P1-7）**，不是这里的重发。
+
+### 验证（已实测）
+真实触发不可路由路径：临时删除 `note.es.#` 绑定 → 发笔记 → 观察回调日志 → 立即恢复绑定。
+```
+【MQ return】消息无法路由到队列：exchange=xhs.exchange, routingKey=note.es, replyText=NO_ROUTE, body={"noteId":23}
+```
+同时确认 ES 未收到该文档（`total=0`），证明消息确实被退回而非入队。绑定已恢复为 `note.es.#`。
+
+---
+
+## P1-2 消除 note:{id} 缓存计数陈旧（2026-10-06）
+
+### 问题
+`note:{id}` 缓存里存的是「缓存时刻」的计数快照，`mergeCounts` 只覆盖了 like / favorite 两个：
+- `shareCount`：Redis 有 `share:count:{id}` 计数器，但 `mergeCounts` 没读 → 详情页分享数最长陈旧 30 分钟
+- `commentCount`：评论是**同步写库**的，没有 Redis 计数器，缓存里是旧值 → 详情页评论数陈旧
+
+### 方案
+| 计数 | 有 Redis 计数器？ | 处理 |
+|---|---|---|
+| likeCount / favoriteCount | 有 | `mergeCounts` 从 Redis 覆盖（原有） |
+| shareCount | 有 | **`mergeCounts` 补读 `share:count:{id}`** |
+| commentCount | 无 | **发评论后删除 `note:{id}` 缓存**（`afterCommit` 内，与评论列表缓存一起删） |
+
+不新增 Redis 评论计数器的理由：评论本身同步写库并直接维护 `t_note.comment_count`，再引一个 Redis 计数器会多出一份需要被对账的数据；直接删缓存更简单、无额外一致性负担。
+
+### 改动文件
+- `service/NoteService.java`：`mergeCounts` 补 `shareCount`
+- `service/CommentService.java`：`add` 的 `afterCommit` 中追加 `redisTemplate.delete(RedisKeys.note(noteId))`
+
+### 踩坑点
+- 三个互动计数里只有 `share` 被漏掉，属于「加功能时忘了同步读取侧」的典型漏改——新增 Redis 计数器时，**写入侧和读取侧要成对补**。
+- 删 `note:{id}` 会让热点笔记的详情缓存在每来一条评论时重建一次；重建只是单条 `SELECT`，可接受。若将来评论量极大，再改成「给评论也上 Redis 计数器 + 对账」。
+
+### 验证（已实测）
+- 令 Redis `share:count:1=777`、DB `share_count=1` → `GET /api/notes/1` 返回 `shareCount=777`（走 Redis）
+- 预热 `note:1`（commentCount=5）→ 发评论 → `note:1` 缓存消失（EXISTS=0）→ 再查 commentCount=6
+
+---
+
+## P1-1 评论列表缓存：游标分页 + 只缓存首页（2026-10-06）
+
+### 问题
+`CommentService.listByNote` 直查库，`RedisKeys.commentList` 定义了从未使用；整列表缓存在大评论量下有大 key、重建风暴、深分页等问题（Day2 选做挑战文档已分析）。
+
+### 方案
+**游标分页（新→旧）+ 只缓存第一页**
+- 排序：`ORDER BY c.id DESC`（id 自增，等价时间倒序且与游标一致，排序稳定）
+- 游标：`WHERE note_id=? AND c.id < lastId LIMIT size`，首页 lastId 传 null → 用 `Long.MAX_VALUE` 兜底
+- 缓存：`comment:list:{noteId}:1`，TTL 5 分钟；空列表 1 分钟（防穿透）
+- 失效：发评论后删首页缓存（DESC 下新评论落在首页）
+- 仅「首页 + 标准页大小 20」走缓存
+
+### 改动文件
+- `common/RedisKeys.java`：`commentList(noteId)` → `commentList(noteId, page)`
+- `mapper/CommentMapper.java`：`selectByNote` → `selectByNoteCursor(noteId, lastId, size)`
+- `service/CommentService.java`：`listByNote` 加分页 + 首页缓存；`add` 在 `afterCommit` 删首页缓存
+- `controller/CommentController.java`：新增可选参数 `lastId` / `size`
+- 前端 `api/index.js`、`views/NoteDetail.vue`：`getComments(noteId, lastId)` + 「加载更多」；评论数标题改用 `note.commentCount`
+
+### 踩坑点
+- **缓存 key 不含 size 会互相污染**：若 `?size=5` 与默认 20 共用同一个 key，后写覆盖先写，默认请求会只拿到 5 条。故限定「首页 + 标准页大小」才缓存。
+- **排序方向决定失效策略**：ASC 下新评论落最后一页、首页几乎不用失效；DESC 下新评论落首页、必须每次删。本项按 DESC（新→旧）实现，单次 `DEL` 开销可忽略。
+- **游标用 id 而非 create_time**：id 自增单调、与 `(note_id, id)` 索引匹配；`create_time` 可能重复导致顺序不稳。
+
+### 验证（已实测）
+```bash
+B=http://localhost:8080
+curl -s "$B/api/notes/1/comments"                      # 首页 DESC
+curl -s "$B/api/notes/1/comments?size=2"               # [14,4]
+curl -s "$B/api/notes/1/comments?size=2&lastId=4"      # [3,2]
+curl -s "$B/api/notes/1/comments?size=2&lastId=2"      # [1]
+docker exec xhs-redis redis-cli EXISTS comment:list:1:1   # 发评论后应为 0
+```
+结果：首页 DESC；缓存写入 TTL≈300s；游标逐页无重叠；自定义 size 不污染默认首页缓存；发评论后缓存 key 被删且新评论置顶。
+
+---
+
+## P0-4 关键写链路加事务 + MQ 与事务解耦（2026-10-06）
+
+### 问题
+全项目 0 处事务；`publish` / `add` 多步写库，中途失败留脏数据；且事务内直接发 MQ 无法随回滚撤回（幽灵消息）。
+
+### 方案选型
+| 决策 | 结论 |
+|---|---|
+| MQ 解耦 | **`TransactionSynchronizationManager` 提交后发送**（非本地消息表 + 定时补偿） |
+| 事务范围 | 业务写（`publish` / `add`）+ 消费者（Like / Favorite / Share） |
+
+### 改动文件
+- `common/TransactionHelper.java`【新增】：`afterCommit(Runnable)` 工具，无活动事务时退化为立即执行
+- `service/NoteService.java`：`publish` 加 `@Transactional`；Feed 推送 + MQ 发送移入 `afterCommit`
+- `service/CommentService.java`：`add` 加 `@Transactional`；通知 MQ + 热度累加移入 `afterCommit`
+- `consumer/{Like,Favorite,Share}Consumer.java`：`@RabbitListener` 方法加 `@Transactional`
+
+### 设计说明
+- `afterCommit` 只在 DB 真正提交后执行副作用，回滚时不发消息 → 无幽灵消息。
+- Feed 推送（Redis 写）一并移到提交后：避免笔记回滚却留下指向不存在笔记的收件箱条目。
+- 消费者加事务：保证「插/删明细 + 改计数」原子。
+- **局限**：进程在「提交成功」与「afterCommit 执行」之间崩溃仍会丢副作用，由 P1-7 对账任务兜底。
+
+### 踩坑点
+- `registerSynchronization` 必须在事务内调用，否则抛 `IllegalStateException`；故用 `isSynchronizationActive()` 判断，无事务时立即执行。
+- MySQL 下 `DuplicateKeyException` 被 catch 不会污染事务（PostgreSQL 会 abort 整个事务），故消费者「插入冲突 → 跳过」的幂等写法与 `@Transactional` 兼容。
+- `@Transactional` 必须经 Spring 代理调用才生效（Controller→Service、监听容器→listener 都满足；同类内部 `this.xxx()` 不生效）。
+
+### 验证（已实测）
+```bash
+B=http://localhost:8080
+T=$(curl -s -X POST $B/api/users/login -H "Content-Type: application/json" -d '{"username":"xiaohong","password":"123456"}' | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
+curl -s -X POST $B/api/notes -H "Authorization: Bearer $T" -H "Content-Type: application/json" -d '{"title":"p04","content":"c","tags":"t"}'   # → 200
+curl -s -X POST $B/api/notes/22/comments -H "Authorization: Bearer $T" -H "Content-Type: application/json" -d '{"content":"hi"}'             # → 200
+curl -s -X POST $B/api/notes -H "Authorization: Bearer $T" -H "Content-Type: application/json" -d '{"title":"","content":"x"}'                # → 400
+```
+结果：发布 200 且库中落库 + ES 收到 doc（afterCommit 的 MQ 生效）；评论后 `t_comment`=1 且 `comment_count`=1（原子）；空标题 400 且 DB 无残留行（回滚、不触发副作用）。
+
+---
+
+## P0-3 密码 BCrypt 加密（2026-10-06）
+
+### 问题
+`UserService.login` 明文比对；`t_user.password VARCHAR(50)` 装不下 BCrypt 的 60 字符；库与脚本里种子密码都是明文 `123456`。
+
+### 方案选型
+| 决策 | 结论 |
+|---|---|
+| 存量密码 | **批量迁移**为 BCrypt（保持 123456 可登录），不保留明文兼容分支 |
+| BCrypt 实现 | **spring-security-crypto** 的 `BCryptPasswordEncoder`（仅引 crypto 模块，不引整个 Security Starter） |
+
+### 改动文件
+- `pom.xml`：新增 `org.springframework.security:spring-security-crypto`（版本由 Spring Boot BOM 管理）
+- `config/PasswordConfig.java`【新增】：`PasswordEncoder` Bean
+- `service/UserService.java`：`login` 改为 `passwordEncoder.matches(raw, hash)`
+- `day0/sql/init.sql`：`password` 列改 `VARCHAR(100) COMMENT '密码（BCrypt 哈希）'`；8 条种子数据密码改为 BCrypt 密文
+- 线上库：`ALTER TABLE t_user MODIFY password VARCHAR(100)...` + `UPDATE t_user SET password='<bcrypt>'`（8 行）
+
+### 设计说明
+- 同一明文每次 BCrypt 结果不同（自带随机盐），所以迁移时所有用户统一写入同一个已知密文即可，比对用 `matches`。
+- 一次性生成密文的方式（不污染仓库）：用项目 classpath 跑临时 `javac/java`，输出 `$2a$10$...` 并自验 `matches=true`。
+
+### 踩坑点
+- **`VARCHAR(50)` 装不下**：BCrypt 输出固定 60 字符，必须扩到 `VARCHAR(100)`（留余量），否则报 `Data too long`。
+- **不保留明文兼容**：若为兼容旧数据写「明文匹配成功再升级」的分支，代码里会永久留一块明文逻辑，面试是减分项——故选择一次性迁移。
+- **null 短路**：`user == null || !matches(...)`，注意 `||` 顺序，避免用户不存在时对 null 调 `matches`。
+
+### 验证（已实测）
+```bash
+B=http://localhost:8080
+curl -s -X POST $B/api/users/login -H "Content-Type: application/json" -d '{"username":"xiaohong","password":"123456"}'   # → 200 + token
+curl -s -X POST $B/api/users/login -H "Content-Type: application/json" -d '{"username":"xiaohong","password":"wrong"}'    # → 401
+curl -s -X POST $B/api/users/login -H "Content-Type: application/json" -d '{"username":"nobody","password":"123456"}'     # → 401（无 NPE）
+```
+结果：正确密码 200，错误密码 401，不存在用户 401。
+
+---
+
+## P0-2 引入认证：X-User-Id → JWT（2026-10-06）
+
+### 问题
+所有 Controller 直接读 `@RequestHeader("X-User-Id")`，客户端可随意伪造，等于以任意用户身份操作。
+
+### 方案选型
+| 方案 | 结论 |
+|---|---|
+| **JWT 无状态（采用）** | 面试标配、无状态易扩展；代价是无法主动失效、需引入 jjwt |
+| Redis 不透明 token | 契合现有 Redis、可主动失效；代价是每请求一次 Redis 查询 |
+| JWT + Redis 黑名单 | 最完整但维护两套，本次未采用 |
+
+### 改动文件
+**后端（xhs-backend）**
+- `pom.xml`：新增 `jjwt-api/impl/jackson 0.11.5`（版本属性 `jjwt.version`）
+- `application.yml`：新增 `xhs.jwt.secret` / `xhs.jwt.expire-minutes`
+- `common/JwtUtil.java`【新增】：签发 / 解析 JWT（HS256，subject=userId）
+- `common/UserContext.java`【新增】：ThreadLocal 保存当前 userId
+- `auth/AuthInterceptor.java`【新增】：解析 `Authorization: Bearer`，写 UserContext；无效 token 返回 HTTP 401
+- `vo/LoginVO.java`【新增】：`{ token, user }`
+- `config/WebConfig.java`：注册 `AuthInterceptor`（仅 `/api/**`）
+- `service/UserService.java`：`login` 返回 `Result<LoginVO>`，成功后签发 token
+- `controller/{User,Note,Interact,Comment}Controller.java`：删除 `@RequestHeader("X-User-Id")`，改从 `UserContext.getUserId()` 取
+
+**前端（xhs-frontend）**
+- `utils/user.js`：新增 `currentToken()`，`saveUser(user, token)`，`clearUser()` 连带清 token，`isLoggedIn()` 改为看 token
+- `api/index.js`：请求头改发 `Authorization: Bearer <token>`；响应 401 时清登录态并提示
+- `views/Login.vue`：登录结果取 `res.token` / `res.user`
+
+### 设计说明（关键决策）
+1. **拦截器语义是"可选认证"**：不带 header 放行（匿名），交给各接口自行决定是否要求登录；带了但无效则立即 401。
+   这样既堵住伪造，又保留原有「读接口公开、写接口需登录」的语义。
+2. **不信任 X-User-Id**：全项目已无任何地方读取该请求头，伪造通道彻底关闭。
+3. **登录接口无需 exclude**：`/api/users/login` 本来就不带 token，匿名放行即可命中。
+
+### 踩坑点
+- **ThreadLocal 必须在 `afterCompletion` 清理**：Tomcat 复用线程，不清会串号——下一个请求可能读到上一个用户的 userId。
+- **HS256 密钥 ≥ 32 字节**：`Keys.hmacShaKeyFor` 对短密钥直接抛异常；yml 里的默认 secret 已满足，生产应走环境变量。
+- **前端登录响应结构变了**：`data` 从裸 `User` 变成 `{token, user}`，前端 `Login.vue` 必须同步改，否则 token 拿不到。故本次前后端一起改（硬切换，无兼容回退——留回退等于认证可绕过）。
+
+### 验证（已实测）
+```bash
+B=http://localhost:8080
+# 1) 登录拿 token
+curl -s -X POST $B/api/users/login -H "Content-Type: application/json" \
+     -d '{"username":"xiaohong","password":"123456"}'
+# 2) 伪造 X-User-Id → 应 401
+curl -s $B/api/notes/follow -H "X-User-Id: 1"
+# 3) 无 token → 应 401
+curl -s $B/api/notes/follow
+# 4) 合法 token → 应 200
+curl -s "$B/api/notes/follow?page=1&size=2" -H "Authorization: Bearer <TOKEN>"
+```
+结果：1) 返回 `{token, user}`；2) `{"code":401}`；3) `{"code":401}`；4) `{"code":200,...}`；
+非法 token 返回 HTTP 401；公开读接口无 token 仍 200。
+
+---
+
+## P0-1 库表结构对齐 init.sql（2026-10-06）
+
+### 问题
+线上库存在 `t_note_share` 表，但未写进 `day0/sql/init.sql`；换机器 `docker compose up` 会缺表。另 `t_comment` 缺 `(note_id, id)` 联合索引。
+同时发现 `t_note.share_count` 列注释为乱码 `'åˆ†äº«æ•°'`（应为 `分享数`）。
+
+### 改动
+- `day0/sql/init.sql`：
+  - 新增 `t_note_share` 表（列注释 + 表注释 `'分享表'` + `uk_user_note` + `idx_note`），置于收藏表之后，原「评论表/关注表」编号顺延为 6/7
+  - `t_comment` 新增 `KEY idx_note_id (note_id, id)`
+- 线上库（`xhs-mysql` 容器）同步执行对应 `ALTER`（补表注释/索引、修复乱码注释、加联合索引）
+
+### 踩坑点
+- 乱码注释是历史 `ALTER` 时字符集不对导致；DDL 脚本与线上库会双向漂移，需以脚本为唯一真源。
+- `t_comment.idx_note` 被新增的 `idx_note_id` 前缀覆盖，属冗余索引，本次按「只增不删」保留。
+
+### 验证
+```bash
+docker exec xhs-mysql mysql -uroot -p123456 -N -e \
+"SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) FROM information_schema.statistics \
+ WHERE table_schema='xhs' GROUP BY table_name,index_name ORDER BY table_name,index_name;"
+```
+结果：全库 20 条索引与 `init.sql` 声明逐项一致。

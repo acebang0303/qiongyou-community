@@ -1,10 +1,12 @@
 package com.xhs.controller;
 
 import com.xhs.common.Result;
+import com.xhs.common.UserContext;
 import com.xhs.entity.User;
 import com.xhs.service.InteractService;
 import com.xhs.service.NoteService;
 import com.xhs.service.UserService;
+import com.xhs.vo.LoginVO;
 import com.xhs.vo.NoteVO;
 import com.xhs.vo.SimpleUserVO;
 import com.xhs.vo.UserVO;
@@ -29,15 +31,15 @@ public class UserController {
 
     /** 登录 */
     @PostMapping("/login")
-    public Result<User> login(@RequestBody User loginForm) {
+    public Result<LoginVO> login(@RequestBody User loginForm) {
         return userService.login(loginForm.getUsername(), loginForm.getPassword());
     }
 
     /** 用户主页信息 */
     @GetMapping("/{id}")
-    public Result<UserVO> userInfo(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
+    public Result<UserVO> userInfo(@PathVariable Long id) {
+        // ★ P0-2：登录身份从 UserContext 取（匿名时为 null）
+        Long viewerId = UserContext.getUserId();
         UserVO vo = userService.userInfo(id, viewerId);
         if (vo == null) {
             return Result.fail(404, "用户不存在");
@@ -47,10 +49,8 @@ public class UserController {
 
     /** 用户发布的笔记 */
     @GetMapping("/{id}/notes")
-    public Result<List<NoteVO>> userNotes(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
-        return Result.ok(noteService.notesByUser(id, viewerId));
+    public Result<List<NoteVO>> userNotes(@PathVariable Long id) {
+        return Result.ok(noteService.notesByUser(id, UserContext.getUserId()));
     }
 
     /** 关注列表 */
@@ -67,9 +67,8 @@ public class UserController {
 
     /** 关注用户 */
     @PostMapping("/{id}/follow")
-    public Result<Void> follow(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
+    public Result<Void> follow(@PathVariable Long id) {
+        Long viewerId = UserContext.getUserId();
         if (viewerId == null) {
             return Result.fail(401, "请先登录");
         }
@@ -78,9 +77,8 @@ public class UserController {
 
     /** 取消关注 */
     @DeleteMapping("/{id}/follow")
-    public Result<Void> unfollow(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
+    public Result<Void> unfollow(@PathVariable Long id) {
+        Long viewerId = UserContext.getUserId();
         if (viewerId == null) {
             return Result.fail(401, "请先登录");
         }

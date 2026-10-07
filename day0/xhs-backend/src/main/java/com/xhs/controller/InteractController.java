@@ -1,6 +1,7 @@
 package com.xhs.controller;
 
 import com.xhs.common.Result;
+import com.xhs.common.UserContext;
 import com.xhs.service.InteractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
  *
  * Day1 压测重点接口：POST /api/notes/{id}/like
  * （基线版同步写库，Day3 起优化）
+ * P0-2：登录身份统一从 UserContext 取
  */
 @RestController
 @RequestMapping("/api/notes")
@@ -20,9 +22,8 @@ public class InteractController {
 
     /** 点赞 */
     @PostMapping("/{id}/like")
-    public Result<Void> like(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+    public Result<Void> like(@PathVariable Long id) {
+        Long userId = UserContext.getUserId();
         if (userId == null) {
             return Result.fail(401, "请先登录");
         }
@@ -31,9 +32,8 @@ public class InteractController {
 
     /** 取消点赞 */
     @DeleteMapping("/{id}/like")
-    public Result<Void> unlike(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+    public Result<Void> unlike(@PathVariable Long id) {
+        Long userId = UserContext.getUserId();
         if (userId == null) {
             return Result.fail(401, "请先登录");
         }
@@ -42,9 +42,8 @@ public class InteractController {
 
     /** 收藏 */
     @PostMapping("/{id}/favorite")
-    public Result<Void> favorite(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+    public Result<Void> favorite(@PathVariable Long id) {
+        Long userId = UserContext.getUserId();
         if (userId == null) {
             return Result.fail(401, "请先登录");
         }
@@ -53,9 +52,8 @@ public class InteractController {
 
     /** 取消收藏 */
     @DeleteMapping("/{id}/favorite")
-    public Result<Void> unfavorite(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+    public Result<Void> unfavorite(@PathVariable Long id) {
+        Long userId = UserContext.getUserId();
         if (userId == null) {
             return Result.fail(401, "请先登录");
         }
@@ -64,9 +62,8 @@ public class InteractController {
 
     /** 分享 */
     @PostMapping("/{id}/share")
-    public Result<Void> share(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+    public Result<Void> share(@PathVariable Long id) {
+        Long userId = UserContext.getUserId();
         if (userId == null) {
             return Result.fail(401, "请先登录");
         }
@@ -75,9 +72,8 @@ public class InteractController {
 
     /** 取消分享 */
     @DeleteMapping("/{id}/share")
-    public Result<Void> unshare(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+    public Result<Void> unshare(@PathVariable Long id) {
+        Long userId = UserContext.getUserId();
         if (userId == null) {
             return Result.fail(401, "请先登录");
         }

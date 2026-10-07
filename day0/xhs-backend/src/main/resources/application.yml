@@ -1,27 +1,85 @@
+# ★ P2-4：公共配置。环境相关项一律走环境变量，右侧为本地开发默认值（保证开箱能跑）。
+# 环境差异（日志级别、SQL 打印、actuator 细节）放 application-dev.yml / application-prod.yml。
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
   application:
     name: xhs-backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/xhs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: "123456"
-  # ★ Day2 新增：Redis 连接
+    url: ${DB_URL:jdbc:mysql://localhost:3307/xhs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
   redis:
-    host: localhost
-    port: 6380
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6380}
     timeout: 3000ms
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    # ★ P1-5：发布端可靠性
+    publisher-confirm-type: correlated   # 消息是否到达交换机（异步回调）
+    publisher-returns: true              # 路由不到队列时退回（配合 mandatory）
+    template:
+      mandatory: true                    # 无匹配队列时触发 ReturnsCallback，而非静默丢弃
+    listener:
+      simple:
+        # ★ P1-6：消费失败先本地重试 3 次（退避），仍失败则拒绝并进死信队列
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000ms
+          multiplier: 2
+          max-interval: 10000ms
+
+xhs:
+  # ★ P0-2：JWT。生产务必通过 JWT_SECRET 覆盖；HS256 要求密钥 >= 32 字节
+  jwt:
+    secret: ${JWT_SECRET:xhs-backend-jwt-secret-key-please-change-in-production-2026}
+    expire-minutes: 120
+  feed:
+    # ★ P1-9：粉丝数超过该值的作者视为大V，发布时不推给粉丝（改由粉丝读时来拉）
+    big-v-fans-threshold: 1000
+    # ★ P1-10：收件箱/发件箱 ZSet 只保留最新 N 条，防止无限膨胀
+    keep: 100
+  hot:
+    # ★ P1-11：热度时间衰减的半衰期（小时）——每过这么久热度减半
+    half-life-hours: 12
+  rate-limit:
+    # ★ P1-13：按用户维度限流（匿名按 IP），单位：次/秒
+    like: 20
+    comment: 5
+    search: 10
+    default: 50
+  es:
+    # ★ P2-2：ES 地址（测试时可指向不可达端口以隔离并验证降级）
+    base-url: ${ES_BASE_URL:http://localhost:9200}
 
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     banner: false
 
-logging:
-  level:
-    com.xhs: debug
+# ★ P2-1：健康检查与指标（具体暴露细节见各 profile）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: xhs-backend
+    description: 仿小红书高并发内容社区系统
+    java: 1.8
+    spring-boot: 2.7.18

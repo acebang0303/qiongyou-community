@@ -36,6 +36,12 @@ public class HotService {
                 .incrementScore(RedisKeys.HOT_NOTES, noteId.toString(), weight);
     }
 
+    /** ★ P1-11：直接设置热度（覆盖写，定时衰减重算用） */
+    public void setScore(Long noteId, double score) {
+        stringRedisTemplate.opsForZSet()
+                .add(RedisKeys.HOT_NOTES, noteId.toString(), score);
+    }
+
     /** 热度前 N 的笔记ID（score 倒序） */
     public List<Long> topIds(int limit) {
         Set<String> members = stringRedisTemplate.opsForZSet()

@@ -1,9 +1,11 @@
 package com.xhs.controller;
 
 import com.xhs.common.Result;
+import com.xhs.common.UserContext;
 import com.xhs.entity.Note;
 import com.xhs.service.NoteService;
 import com.xhs.vo.NoteVO;
+import com.xhs.vo.SearchPageVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,17 +28,16 @@ public class NoteController {
     @GetMapping("/list")
     public Result<List<NoteVO>> list(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
-        return Result.ok(noteService.latest(page, size, viewerId));
+            @RequestParam(defaultValue = "10") int size) {
+        return Result.ok(noteService.latest(page, size, UserContext.getUserId()));
     }
 
     /** 关注页：我关注的人的笔记（需要登录） */
     @GetMapping("/follow")
     public Result<List<NoteVO>> follow(
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
+        Long viewerId = UserContext.getUserId();
         if (viewerId == null) {
             return Result.fail(401, "请先登录");
         }
@@ -48,8 +49,8 @@ public class NoteController {
      * 依赖组件（Redis/DB）异常时，降级返回最新笔记列表，而不是抛 500
      */
     @GetMapping("/hot")
-    public Result<List<NoteVO>> hot(
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
+    public Result<List<NoteVO>> hot() {
+        Long viewerId = UserContext.getUserId();
         try {
             return Result.ok(noteService.hot(viewerId));
         } catch (Exception e) {
@@ -58,22 +59,19 @@ public class NoteController {
         }
     }
 
-    /** 关键词搜索（Day8 起服务端优先走 ES） */
+    /** 关键词搜索（Day8 起服务端优先走 ES；★ P1-16 游标分页） */
     @GetMapping("/search")
-    public Result<List<NoteVO>> search(
+    public Result<SearchPageVO> search(
             @RequestParam String keyword,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
-        return Result.ok(noteService.search(keyword, page, size, viewerId));
+            @RequestParam(required = false) String cursor,
+            @RequestParam(defaultValue = "20") int size) {
+        return Result.ok(noteService.search(keyword, size, cursor, UserContext.getUserId()));
     }
 
     /** 笔记详情 */
     @GetMapping("/{id}")
-    public Result<NoteVO> detail(
-            @PathVariable Long id,
-            @RequestHeader(value = "X-User-Id", required = false) Long viewerId) {
-        NoteVO vo = noteService.detail(id, viewerId);
+    public Result<NoteVO> detail(@PathVariable Long id) {
+        NoteVO vo = noteService.detail(id, UserContext.getUserId());
         if (vo == null) {
             return Result.fail(404, "笔记不存在");
         }
@@ -82,9 +80,8 @@ public class NoteController {
 
     /** 发布笔记 */
     @PostMapping
-    public Result<Long> publish(
-            @RequestBody Note note,
-            @RequestHeader(value = "X-User-Id", required = false) Long userId) {
+    public Result<Long> publish(@RequestBody Note note) {
+        Long userId = UserContext.getUserId();
         if (userId == null) {
             return Result.fail(401, "请先登录");
         }

@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS t_user;
 CREATE TABLE t_user (
     id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '用户ID',
     username    VARCHAR(50)  NOT NULL COMMENT '登录名',
-    password    VARCHAR(50)  NOT NULL COMMENT '密码（基线版明文，仅用于教学）',
+    password    VARCHAR(100) NOT NULL COMMENT '密码（BCrypt 哈希）',
     nickname    VARCHAR(50)  NOT NULL COMMENT '昵称',
     avatar      VARCHAR(255) DEFAULT '' COMMENT '头像URL',
     signature   VARCHAR(200) DEFAULT '' COMMENT '个性签名',
@@ -73,7 +73,21 @@ CREATE TABLE t_note_favorite (
 ) ENGINE = InnoDB COMMENT '收藏表';
 
 -- ----------------------------
--- 5. 评论表
+-- 5. 分享表（唯一索引：一个用户对一篇笔记只计一次分享）
+-- ----------------------------
+DROP TABLE IF EXISTS t_note_share;
+CREATE TABLE t_note_share (
+    id          BIGINT   NOT NULL AUTO_INCREMENT,
+    note_id     BIGINT   NOT NULL COMMENT '笔记ID',
+    user_id     BIGINT   NOT NULL COMMENT '用户ID',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_user_note (user_id, note_id),
+    KEY idx_note (note_id)
+) ENGINE = InnoDB COMMENT '分享表';
+
+-- ----------------------------
+-- 6. 评论表
 -- ----------------------------
 DROP TABLE IF EXISTS t_comment;
 CREATE TABLE t_comment (
@@ -83,11 +97,12 @@ CREATE TABLE t_comment (
     content     VARCHAR(500) NOT NULL COMMENT '评论内容',
     create_time DATETIME     DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    KEY idx_note (note_id)
+    KEY idx_note (note_id),
+    KEY idx_note_id (note_id, id)
 ) ENGINE = InnoDB COMMENT '评论表';
 
 -- ----------------------------
--- 6. 关注表
+-- 7. 关注表
 -- ----------------------------
 DROP TABLE IF EXISTS t_follow;
 CREATE TABLE t_follow (
@@ -101,18 +116,18 @@ CREATE TABLE t_follow (
 ) ENGINE = InnoDB COMMENT '关注表';
 
 -- =============================================================
--- 测试数据（密码均为 123456）
+-- 测试数据（密码均为 123456，库中以 BCrypt 密文存储）
 -- =============================================================
 
 INSERT INTO t_user (id, username, password, nickname, signature) VALUES
-(1, 'xiaohong',           '123456', '薯队长',     '官方账号，带你玩转红薯社区'),
-(2, 'sanya_walker',       '123456', '三亚行走',   '用脚步丈量三亚的每一片沙滩'),
-(3, 'haikou_foodie',      '123456', '海口吃货',   '吃遍海口大街小巷'),
-(4, 'island_driver',      '123456', '环岛司机',   '自驾游爱好者，环岛二十次'),
-(5, 'beach_girl',         '123456', '海边少女',   '大海治愈一切'),
-(6, 'coffee_hunter',      '123456', '咖啡猎人',   '寻找海南最老的咖啡店'),
-(7, 'surf_boy',           '123456', '冲浪少年',   '后海村常驻选手'),
-(8, 'travel_photographer','123456', '旅行摄影师', '用镜头记录海南');
+(1, 'xiaohong',           '$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '薯队长',     '官方账号，带你玩转红薯社区'),
+(2, 'sanya_walker',       '$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '三亚行走',   '用脚步丈量三亚的每一片沙滩'),
+(3, 'haikou_foodie',      '$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '海口吃货',   '吃遍海口大街小巷'),
+(4, 'island_driver',      '$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '环岛司机',   '自驾游爱好者，环岛二十次'),
+(5, 'beach_girl',         '$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '海边少女',   '大海治愈一切'),
+(6, 'coffee_hunter',      '$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '咖啡猎人',   '寻找海南最老的咖啡店'),
+(7, 'surf_boy',           '$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '冲浪少年',   '后海村常驻选手'),
+(8, 'travel_photographer','$2a$10$yOph.07dUUvo8hI6CHtLWO968bGDgOJ2qSGXdSO8pbYVeIKNQVp/K', '旅行摄影师', '用镜头记录海南');
 
 INSERT INTO t_note (id, user_id, title, content, tags, create_time) VALUES
 (1, 2, '三亚三天两夜超全攻略，人均800玩转！',

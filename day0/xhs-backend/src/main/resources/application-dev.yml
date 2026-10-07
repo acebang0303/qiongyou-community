@@ -1,0 +1,13 @@
+# ★ P2-4：开发环境。打印 SQL、日志更详细、health 暴露组件细节，方便本地排查。
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.xhs: debug
+
+management:
+  endpoint:
+    health:
+      show-details: always

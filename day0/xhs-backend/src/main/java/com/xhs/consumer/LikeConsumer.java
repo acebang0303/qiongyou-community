@@ -13,10 +13,12 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Day6：点赞落库消费者
  * 按消费者的处理能力匀速写 MySQL —— 这就是"削峰填谷"
+ * ★ P0-4：加事务，保证「插/删明细 + 改计数」原子；抛异常则消息重新入队
  */
 @Slf4j
 @Component
@@ -27,6 +29,7 @@ public class LikeConsumer {
     @Autowired
     private NoteMapper noteMapper;
 
+    @Transactional
     @RabbitListener(queues = RabbitConfig.LIKE_DB_QUEUE)
     public void onLikeEvent(LikeEvent event) {
         if (event.isLiked()) {

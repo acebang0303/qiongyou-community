@@ -50,7 +50,7 @@
 
       <!-- 评论区 -->
       <div class="comment-section">
-        <h3 style="margin-bottom: 16px">评论 {{ comments.length }}</h3>
+        <h3 style="margin-bottom: 16px">评论 {{ note.commentCount }}</h3>
 
         <div style="display: flex; gap: 12px; margin-bottom: 16px">
           <el-input
@@ -71,6 +71,9 @@
               <div class="comment-content">{{ c.content }}</div>
               <div class="comment-time">{{ c.createTime }}</div>
             </div>
+          </div>
+          <div v-if="hasMore" style="text-align: center; margin-top: 16px">
+            <el-button :loading="moreLoading" @click="loadMore">加载更多</el-button>
           </div>
         </div>
         <div v-else class="empty-tip">还没有评论，来抢沙发~</div>
@@ -95,20 +98,45 @@ const route = useRoute()
 const router = useRouter()
 const noteId = route.params.id
 
+const PAGE_SIZE = 20
 const note = ref(null)
 const comments = ref([])
 const commentText = ref('')
 const loading = ref(false)
+const hasMore = ref(false)
+const moreLoading = ref(false)
 
 async function load() {
   loading.value = true
   try {
     note.value = await getNoteDetail(noteId)
-    comments.value = await getComments(noteId)
+    await loadFirstPage()
   } catch (e) {
     note.value = null
   } finally {
     loading.value = false
+  }
+}
+
+// 拉第一页（新→旧），重置列表
+async function loadFirstPage() {
+  comments.value = await getComments(noteId)
+  hasMore.value = comments.value.length === PAGE_SIZE
+}
+
+// 用最后一条 id 作游标追加下一页
+async function loadMore() {
+  const last = comments.value[comments.value.length - 1]
+  if (!last) return
+  moreLoading.value = true
+  try {
+    const more = await getComments(noteId, last.id)
+    comments.value = comments.value.concat(more)
+    hasMore.value = more.length === PAGE_SIZE
+  } catch (e) {
+    /* 拦截器已提示 */
+  } finally {
+    moreLoading.value = false
   }
 }
 
@@ -169,7 +197,8 @@ async function submitComment() {
   try {
     await addComment(noteId, commentText.value)
     commentText.value = ''
-    comments.value = await getComments(noteId)
+    // 新评论在最前，重载首页
+    await loadFirstPage()
     note.value.commentCount++
   } catch (e) { /* 拦截器已提示 */ }
 }

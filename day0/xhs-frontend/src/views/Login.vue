@@ -48,10 +48,10 @@ async function handleLogin() {
   }
   loading.value = true
   try {
-    const user = await login(form.username, form.password)
-    saveUser(user)
+    const res = await login(form.username, form.password)
+    saveUser(res.user, res.token)
     window.dispatchEvent(new Event('xhs-user-changed'))
-    ElMessage.success(`欢迎，${user.nickname}`)
+    ElMessage.success(`欢迎，${res.user.nickname}`)
     router.push('/')
   } catch (e) {
     // 错误提示已由 axios 拦截器处理

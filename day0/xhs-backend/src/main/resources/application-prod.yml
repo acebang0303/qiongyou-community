@@ -1,0 +1,14 @@
+# ★ P2-4：生产环境。关闭 SQL 打印、降低日志级别、health 不暴露组件细节。
+# 注意：数据库/Redis/MQ 地址与密码、JWT 密钥都必须由环境变量注入（见 application.yml 的占位符）。
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  level:
+    com.xhs: info
+
+management:
+  endpoint:
+    health:
+      show-details: never

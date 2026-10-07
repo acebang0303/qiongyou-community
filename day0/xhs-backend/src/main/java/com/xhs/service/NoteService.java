@@ -2,6 +2,7 @@ package com.xhs.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xhs.common.RedisKeys;
+import com.xhs.common.TransactionHelper;
 import com.xhs.config.RabbitConfig;
 import com.xhs.dto.NoteEvent;
 import com.xhs.entity.Follow;
@@ -9,11 +10,15 @@ import com.xhs.entity.Note;
 import com.xhs.mapper.FollowMapper;
 import com.xhs.mapper.NoteMapper;
 import com.xhs.vo.NoteVO;
+import com.xhs.vo.SearchPageVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
@@ -45,6 +50,9 @@ public class NoteService {
     private FollowMapper followMapper;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    /** 互动类 Set/计数用 String 序列化读写，必须与 InteractService 的 Lua 写入侧成对 */
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private FeedService feedService;
     @Autowired
@@ -62,14 +70,19 @@ public class NoteService {
         return list;
     }
 
-    /** 关注页：ZSet Feed 收件箱（Day7 逻辑，保持不变） */
+    /** 关注页：ZSet Feed 收件箱（Day7 逻辑，Redis 异常时降级走 MySQL） */
     public List<NoteVO> followFeed(Long userId, int page, int size, Long viewerId) {
-        List<Long> ids = feedService.feedIds(userId, page, size);
         List<NoteVO> list;
-        if (ids.isEmpty()) {
+        try {
+            List<Long> ids = feedService.feedIds(userId, page, size);
+            if (ids.isEmpty()) {
+                list = noteMapper.selectFollowFeed(userId, (page - 1) * size, size);
+            } else {
+                list = noteMapper.selectByIds(ids);
+            }
+        } catch (Exception e) {
+            log.warn("Feed 服务异常，降级走 MySQL", e);
             list = noteMapper.selectFollowFeed(userId, (page - 1) * size, size);
-        } else {
-            list = noteMapper.selectByIds(ids);
         }
         fillStatus(list, viewerId);
         mergeCounts(list);
@@ -91,23 +104,27 @@ public class NoteService {
 
     /**
      * ★ Day8 改造：搜索优先走 ES
-     * ES 抛异常（服务不可用）→ 降级回退 MySQL LIKE，保证功能可用
+     * ★ P1-16：改游标分页（search_after），返回 {list, nextCursor}
+     * ES 抛异常（服务不可用）→ 降级回退 MySQL LIKE（单页，无游标）
      */
-    public List<NoteVO> search(String keyword, int page, int size, Long viewerId) {
+    public SearchPageVO search(String keyword, int size, String cursor, Long viewerId) {
         if (!StringUtils.hasText(keyword)) {
-            return Collections.emptyList();
+            return new SearchPageVO(Collections.emptyList(), null);
         }
         List<NoteVO> list;
+        String nextCursor = null;
         try {
-            List<Long> ids = esService.searchIds(keyword.trim(), page, size);
-            list = ids.isEmpty() ? Collections.emptyList() : noteMapper.selectByIds(ids);
+            EsService.Page page = esService.searchPage(keyword.trim(), size, cursor);
+            list = page.getIds().isEmpty() ? Collections.emptyList() : noteMapper.selectByIds(page.getIds());
+            nextCursor = page.getNextCursor();
         } catch (Exception e) {
             log.warn("ES 搜索失败，降级到 MySQL：{}", e.getMessage());
-            list = noteMapper.selectSearch(keyword.trim(), (page - 1) * size, size);
+            // 降级走 MySQL 时无游标语义，只返回第一页
+            list = noteMapper.selectSearch(keyword.trim(), 0, size);
         }
         fillStatus(list, viewerId);
         mergeCounts(list);
-        return list;
+        return new SearchPageVO(list, nextCursor);
     }
 
     /** 缓存 → 未命中走分布式锁互斥重建（Day5 逻辑，保持不变） */
@@ -175,7 +192,9 @@ public class NoteService {
     /**
      * ★ Day8 改造：发布笔记后发送 NoteEvent，异步写入 ES 索引
      * （Day7 的 Feed 推送逻辑保留）
+     * ★ P0-4：加事务；Feed 推送(Redis) 与 MQ 发送移到提交后，避免回滚留下幽灵数据/消息
      */
+    @Transactional
     public Long publish(Note note, Long userId) {
         if (!StringUtils.hasText(note.getTitle()) || !StringUtils.hasText(note.getContent())) {
             throw new IllegalArgumentException("标题和正文不能为空");
@@ -186,11 +205,14 @@ public class NoteService {
         note.setCommentCount(0);
         note.setFavoriteCount(0);
         noteMapper.insert(note);
-        feedService.pushNote(note.getId(), userId);
-        // ★ Day8：发 MQ 异步建索引，发布主流程不等待 ES
-        rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,
-                RabbitConfig.NOTE_ES_ROUTING_KEY, new NoteEvent(note.getId()));
-        return note.getId();
+        Long noteId = note.getId();
+        TransactionHelper.afterCommit(() -> {
+            feedService.pushNote(noteId, userId);
+            rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE,
+                    RabbitConfig.NOTE_ES_ROUTING_KEY, new NoteEvent(noteId),
+                    new CorrelationData("note.es:" + noteId));
+        });
+        return noteId;
     }
 
     /** 点赞/收藏状态从 Redis 判断（Day3 改造） */
@@ -201,15 +223,21 @@ public class NoteService {
         if (viewerId != null) {
             Set<Long> likedNotes = new HashSet<>();
             Set<Long> favoritedNotes = new HashSet<>();
-            for (NoteVO vo : list) {
-                if (Boolean.TRUE.equals(redisTemplate.opsForSet()
-                        .isMember(RedisKeys.like(vo.getId()), viewerId.toString()))) {
-                    likedNotes.add(vo.getId());
+            try {
+                for (NoteVO vo : list) {
+                    // ★ P1-7 修复：改用 StringRedisTemplate，与写侧（Lua）的裸字符串成员一致
+                    if (Boolean.TRUE.equals(stringRedisTemplate.opsForSet()
+                            .isMember(RedisKeys.like(vo.getId()), viewerId.toString()))) {
+                        likedNotes.add(vo.getId());
+                    }
+                    if (Boolean.TRUE.equals(stringRedisTemplate.opsForSet()
+                            .isMember(RedisKeys.favorite(vo.getId()), viewerId.toString()))) {
+                        favoritedNotes.add(vo.getId());
+                    }
                 }
-                if (Boolean.TRUE.equals(redisTemplate.opsForSet()
-                        .isMember(RedisKeys.favorite(vo.getId()), viewerId.toString()))) {
-                    favoritedNotes.add(vo.getId());
-                }
+            } catch (Exception e) {
+                // Redis 故障时跳过点赞/收藏状态，保留默认值
+                log.warn("读取互动状态失败，跳过：{}", e.getMessage());
             }
             List<Long> authorIds = list.stream().map(NoteVO::getUserId).distinct().collect(Collectors.toList());
             Set<Long> followedAuthors = followMapper.selectList(
@@ -226,20 +254,29 @@ public class NoteService {
         }
     }
 
-    /** 点赞数/收藏数优先取 Redis（Day3 改造） */
+    /** 点赞数/收藏数/分享数优先取 Redis（Day3 改造；★ P1-2 补 shareCount） */
     private void mergeCounts(List<NoteVO> list) {
         if (list == null || list.isEmpty()) {
             return;
         }
-        for (NoteVO vo : list) {
-            Object likeCount = redisTemplate.opsForValue().get(RedisKeys.likeCount(vo.getId()));
-            if (likeCount != null) {
-                vo.setLikeCount(Integer.parseInt(likeCount.toString()));
+        try {
+            for (NoteVO vo : list) {
+                String likeCount = stringRedisTemplate.opsForValue().get(RedisKeys.likeCount(vo.getId()));
+                if (likeCount != null) {
+                    vo.setLikeCount(Integer.parseInt(likeCount));
+                }
+                String favoriteCount = stringRedisTemplate.opsForValue().get(RedisKeys.favoriteCount(vo.getId()));
+                if (favoriteCount != null) {
+                    vo.setFavoriteCount(Integer.parseInt(favoriteCount));
+                }
+                String shareCount = stringRedisTemplate.opsForValue().get(RedisKeys.shareCount(vo.getId()));
+                if (shareCount != null) {
+                    vo.setShareCount(Integer.parseInt(shareCount));
+                }
             }
-            Object favoriteCount = redisTemplate.opsForValue().get(RedisKeys.favoriteCount(vo.getId()));
-            if (favoriteCount != null) {
-                vo.setFavoriteCount(Integer.parseInt(favoriteCount.toString()));
-            }
+        } catch (Exception e) {
+            // Redis 故障时保留 MySQL 里的计数
+            log.warn("读取 Redis 计数失败，使用 MySQL 计数：{}", e.getMessage());
         }
     }
 }
