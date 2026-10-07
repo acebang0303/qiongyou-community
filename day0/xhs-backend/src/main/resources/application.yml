@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: xhs-backend
+    name: qiongyou-backend
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
   datasource:
@@ -45,10 +45,10 @@ spring:
           multiplier: 2
           max-interval: 10000ms
 
-xhs:
+qiongyou:
   # ★ P0-2：JWT。生产务必通过 JWT_SECRET 覆盖；HS256 要求密钥 >= 32 字节
   jwt:
-    secret: ${JWT_SECRET:xhs-backend-jwt-secret-key-please-change-in-production-2026}
+    secret: ${JWT_SECRET:qiongyou-backend-jwt-secret-key-please-change-in-production-2026}
     expire-minutes: 120
   feed:
     # ★ P1-9：粉丝数超过该值的作者视为大V，发布时不推给粉丝（改由粉丝读时来拉）
@@ -86,7 +86,7 @@ management:
 
 info:
   app:
-    name: xhs-backend
-    description: 仿小红书高并发内容社区系统
+    name: qiongyou-backend
+    description: 琼游100天交流分享社区
     java: 1.8
     spring-boot: 2.7.18

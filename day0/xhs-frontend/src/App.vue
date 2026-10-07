@@ -3,7 +3,7 @@
     <!-- 顶部导航 -->
     <header class="app-header">
       <div class="header-inner">
-        <div class="logo" @click="goHome">红薯社区</div>
+        <div class="logo" @click="goHome">琼游100天</div>
 
         <div class="header-search">
           <el-input
@@ -85,5 +85,5 @@ function logout() {
 }
 
 // 登录页保存用户后通过自定义事件刷新导航栏
-window.addEventListener('xhs-user-changed', refreshUser)
+window.addEventListener('qiongyou-user-changed', refreshUser)
 </script>

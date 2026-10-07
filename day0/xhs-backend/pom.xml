@@ -11,11 +11,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.xhs</groupId>
-    <artifactId>xhs-backend</artifactId>
+    <groupId>com.qiongyou</groupId>
+    <artifactId>qiongyou-backend</artifactId>
     <version>1.0.0</version>
-    <name>xhs-backend</name>
-    <description>仿小红书高并发内容社区系统（Redis 缓存/幂等/MQ 削峰/Feed 与热榜/ES 搜索/限流降级）</description>
+    <name>qiongyou-backend</name>
+    <description>琼游100天交流分享社区（Redis 缓存/幂等/MQ 削峰/Feed 与热榜/ES 搜索/限流降级）</description>
 
     <properties>
         <java.version>1.8</java.version>

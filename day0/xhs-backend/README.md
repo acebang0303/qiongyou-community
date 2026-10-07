@@ -1,4 +1,4 @@
-# xhs-backend — 仿小红书高并发内容社区系统
+# qiongyou-backend — 琼游100天交流分享社区
 
 一个从"能跑通"演进到"接近生产"的 Spring Boot 后端：覆盖 Redis 缓存与一致性、Lua 原子幂等、
 RabbitMQ 异步削峰、Feed 流与热榜、Elasticsearch 搜索、限流与降级，并补齐认证、事务、
@@ -123,9 +123,9 @@ mvn spring-boot:run           # 默认 dev profile，连 3307/6380/5672/9200
 ## 目录结构
 
 ```
-src/main/java/com/xhs/
+src/main/java/com/qiongyou/
   auth/       认证拦截器（JWT → UserContext）
-  common/     RedisKeys / Result / JwtUtil / UserContext / TransactionHelper
+  common/     RedisKeys / Result / JwtUtil / UserContext / TransactionHelper / RedisLock
   config/     Redis / RabbitMQ(拓扑+DLX+发布确认) / Web(MVC+拦截器) / 密码 / OpenAPI
   consumer/   like / favorite / share / comment-notify / note-es 消费者
   controller/ REST 接口
@@ -134,7 +134,7 @@ src/main/java/com/xhs/
   service/    业务 + 定时任务（ReconcileTask / HotRankTask）+ ES 服务与启动 Runner
   vo/ dto/ entity/
 src/main/resources/   application.yml + application-{dev,prod}.yml
-src/test/java/com/xhs/ Testcontainers 集成测试
+src/test/java/com/qiongyou/ Testcontainers 集成测试
 ```
 
 ## 已知限制

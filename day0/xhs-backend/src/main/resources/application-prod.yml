@@ -6,7 +6,7 @@ mybatis-plus:
 
 logging:
   level:
-    com.xhs: info
+    com.qiongyou: info
 
 management:
   endpoint:

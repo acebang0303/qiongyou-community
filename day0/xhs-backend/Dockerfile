@@ -18,6 +18,6 @@ RUN mvn -B -q -DskipTests package
 # ---------- 运行阶段 ----------
 FROM eclipse-temurin:8-jre
 WORKDIR /app
-COPY --from=build /build/target/xhs-backend-1.0.0.jar app.jar
+COPY --from=build /build/target/qiongyou-backend-1.0.0.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

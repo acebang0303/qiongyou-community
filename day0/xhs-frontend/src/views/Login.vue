@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <el-card class="login-card">
-      <h2 class="login-title">登录红薯社区</h2>
+      <h2 class="login-title">登录琼游100天交流分享社区</h2>
       <el-form @submit.prevent="handleLogin">
         <el-form-item>
           <el-input v-model="form.username" placeholder="用户名" size="large" />
@@ -50,7 +50,7 @@ async function handleLogin() {
   try {
     const res = await login(form.username, form.password)
     saveUser(res.user, res.token)
-    window.dispatchEvent(new Event('xhs-user-changed'))
+    window.dispatchEvent(new Event('qiongyou-user-changed'))
     ElMessage.success(`欢迎，${res.user.nickname}`)
     router.push('/')
   } catch (e) {

@@ -5,7 +5,7 @@ mybatis-plus:
 
 logging:
   level:
-    com.xhs: debug
+    com.qiongyou: debug
 
 management:
   endpoint:

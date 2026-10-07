@@ -1,6 +1,37 @@
-# CHANGELOG — xhs-backend 生产化改造
+# CHANGELOG — 琼游100天交流分享社区 后端生产化改造
 
 记录每个 P0/P1/P2/P3 任务的改动设计、踩坑点与验证方式。任务定义见 [PRODUCTION-TODO.md](PRODUCTION-TODO.md)。
+
+---
+
+## 项目改名：xhs → 琼游100天交流分享社区（2026-10-07）
+
+### 改动范围（文案 + 代码标识，**不动运行时资源**）
+
+| 类别 | 改动 |
+|---|---|
+| Java 包名 | `com.xhs` → `com.qiongyou`（含 `src/main` 与 `src/test`，用 `git mv` 保住历史） |
+| 启动类 | `XhsApplication` → `QiongyouApplication` |
+| 配置命名空间 | `xhs.*` → `qiongyou.*`（`@Value("${qiongyou.jwt.secret}")` 等 22 处） |
+| Maven | groupId `com.qiongyou`、artifactId `qiongyou-backend`、name、description |
+| 应用名/信息 | `spring.application.name`、`info.app.*`、JWT 密钥默认值（yml 与 compose 同步改） |
+| 接口文档 | Swagger 标题与描述 |
+| 前端 | 页面标题、导航 logo、登录页标题、`package.json` 名称/描述、localStorage 键与自定义事件名（`qiongyou-user` / `qiongyou-token` / `qiongyou-user-changed`） |
+| 文档 | README / PRODUCTION-TODO / docs 全部改为新名 |
+
+### 刻意**不改**的（属运行时资源，改了会孤儿化线上状态）
+
+- 容器名 `xhs-*`、数据库名 `xhs`、MQ 交换机 `xhs.exchange` / `xhs.dlx`、ES 索引 `xhs_notes`
+- 目录名 `day0/xhs-backend`、`day0/xhs-frontend`（改动会波及 `node_modules` 等未跟踪文件与构建上下文）
+
+### 验证（已实测）
+- `./ci.sh` → **9/9 通过**（包名从 `com.xhs` 迁到 `com.qiongyou` 后测试类全部正常）
+- 前端 `npm run build` 通过，产物 `dist/index.html` 标题为「琼游100天交流分享社区」
+- 全仓（排除 node_modules/target/dist/.idea）已无 `com.xhs` / `XhsApplication` / `xhs-backend` / `红薯社区` / `仿小红书` 残留
+
+### 注意
+- 改了 `artifactId` → **jar 名变为 `qiongyou-backend-1.0.0.jar`**（`Dockerfile` 已同步），容器镜像需重新构建才会生效。
+- JWT 密钥默认值变了 → 已签发的 token 全部失效，需重新登录。
 
 ---
 

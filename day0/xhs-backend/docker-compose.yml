@@ -93,7 +93,7 @@ services:
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
       ES_BASE_URL: http://elasticsearch:9200
-      JWT_SECRET: xhs-backend-jwt-secret-key-please-change-in-production-2026
+      JWT_SECRET: qiongyou-backend-jwt-secret-key-please-change-in-production-2026
 
 volumes:
   mysql-data:
