@@ -14,3 +14,20 @@ node_modules/
 # ---- 操作系统 ----
 .DS_Store
 Thumbs.db
+
+# ---- 课程方实训资料（版权归课程方所有，不随本仓库公开）----
+day0/day1-笔记.pdf
+day0/xhs-frontend/项目说明文档.md
+day2/选做挑战设计.md
+day*/Day*-实训手册-*.md
+day*/Day*-实训手册-*.pdf
+day*/code/
+day8/mapping.json
+day8/notes.ndjson
+
+# ---- JMeter 生成的仪表盘（可由 .jtl 用 `jmeter -g` 重新生成；保留统计结果）----
+day8/ratelimit/report/*
+!day8/ratelimit/report/statistics.json
+day8/ratelimit/report-comments/*
+!day8/ratelimit/report-comments/statistics.json
+day8/ratelimit/jmeter.log

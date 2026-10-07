@@ -144,3 +144,21 @@ src/test/java/com/qiongyou/ Testcontainers 集成测试
 - **健康检查把 ES 计入整体状态**：ES 挂掉会让 overall 变 DOWN，而应用其实可降级运行。
 - **未接 CI 平台**：仓库在 Gitee，提供可复用的 `ci.sh`。
 - **未引入 DB 迁移工具**：`init.sql` 为唯一 schema 真源（理由见 CHANGELOG）。
+
+## 安全说明（重要）
+
+本仓库里出现的所有口令与密钥**都是本地演示环境的默认值，不是真实凭据**：
+
+| 项 | 默认值 | 说明 |
+|---|---|---|
+| 演示账号密码 | `123456` | `init.sql` 的种子数据（库中以 BCrypt 存储），仅为让 `docker compose up` 后能直接登录体验 |
+| MySQL | `root / 123456` | 仅监听本地 `3307`（Docker 映射），由 `docker-compose.yml` 在本地创建 |
+| RabbitMQ | `guest / guest` | RabbitMQ 自带默认账号，仅本地使用 |
+| JWT 密钥 | yml 中的默认串 | 仅本地开发用；**任何真实部署都必须用环境变量覆盖** |
+
+**部署到任何非本地环境前，必须通过环境变量覆盖**：`DB_PASSWORD`、`RABBITMQ_PASSWORD`、`JWT_SECRET` 等
+（见 [application.yml](src/main/resources/application.yml) 的 `${ENV:默认值}` 占位符）。
+生产 profile（`SPRING_PROFILES_ACTIVE=prod`）已默认关闭 SQL 打印与接口文档。
+
+> 仓库中若包含课程实训的参考资料（`dayN/` 下的手册与参考实现），版权归课程方所有，此处仅作学习记录之用。
+
