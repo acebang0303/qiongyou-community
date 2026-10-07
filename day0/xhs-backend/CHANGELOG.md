@@ -4,6 +4,44 @@
 
 ---
 
+## P3-1 消除 N+1 Redis 往返（2026-10-07，先实测确认再修）
+
+### 问题（由对照压测实测发现，不是纸面分析）
+读接口每篇笔记要做 5 次 Redis 往返（`fillStatus` 2 次 `SISMEMBER` + `mergeCounts` 3 次 `GET`），
+10 篇列表就是 **50 次往返**，而基线只需 1 条 SQL → 列表接口比基线慢 **+538%**。
+
+### 方案
+- `fillStatus`：`SISMEMBER` 改用 **pipeline**（`stringRedisTemplate.executePipelined(SessionCallback)`），
+  N 篇的 2N 次判断合成 1 次往返
+- `mergeCounts`：`GET` 改用 **`multiGet`（MGET）**，3N 次取数合成 1 次往返
+- 结果按提交顺序回填（每篇在名单里占连续槽位），并加了越界保护
+
+**每请求 Redis 往返：`5 × 条数` → **2 次，与条数无关**。
+
+### 改动文件
+- `service/NoteService.java`：`fillStatus` / `mergeCounts` 改写为批量；补充 `RedisOperations` / `SessionCallback` / `SetOperations` / `ArrayList` 导入
+
+### 踩坑点
+- **`executePipelined` 有固定开销**：单篇（`detail`）场景下，批量化的收益被回调开销抵消，实测**没有改善**；
+  条数越多收益越明显（10 篇时 -75%）。所以**批量只对列表类接口有意义**。
+- **pipeline 结果按提交顺序返回**，必须用「每篇占连续槽位」的方式回填，否则会把 A 的点赞状态安到 B 上。
+  本次用接口层抽查核对过（note 30 的 `liked`/`likeCount` 与 Redis 直查完全一致）。
+- 批量读**没有**动写入侧（Lua 仍是单篇原子操作）——批量化只适用于读。
+
+### 验证（已实测）
+同一套环境、同一份 JMeter 计划复测（1000 请求/场景，零错误）：
+
+| 场景 | 修复前 | 修复后 | 变化 |
+|---|---|---|---|
+| 列表（10 篇） | 43.4 ms | **11.0 ms** | **-75%** |
+| 热榜（10 篇） | 44.7 ms | **12.7 ms** | **-72%** |
+| 搜索（20 条） | 134.1 ms | **29.0 ms** | **-78%** |
+| 详情（1 篇） | 9.9 ms | 10.2 ms | 无变化（见踩坑点） |
+
+回归测试 `./ci.sh` → 9/9 通过。完整对照见 [docs/PERF.md](docs/PERF.md)。
+
+---
+
 ## N-1 ~ N-3 面试叙事材料（2026-10-07）
 
 新增三份文档（非代码）：

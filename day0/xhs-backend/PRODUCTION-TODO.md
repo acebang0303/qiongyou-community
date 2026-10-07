@@ -196,9 +196,12 @@
 
 ## P3 — 性能 / 安全细节（能体现深度的加分项）
 
-- [ ] **P3-1 消除 N+1 Redis 往返** ｜ M ｜ 🔴 **已实测确认：当前第一优先级的性能项**
-  - 📌 2026-10-07 压测实测：`list` 场景优化后比基线慢 **+538%**（6.8→43.4ms），根因就是这里的 N+1（每篇 2 次 `SISMEMBER` + 3 次 `GET`）。
-    详见 [docs/PERF.md](docs/PERF.md)。修法：改 pipeline / `MGET` / `SMISMEMBER` 批量一次往返。
+- [x] **P3-1 消除 N+1 Redis 往返** ｜ M ｜ ✅ 2026-10-07（**先实测确认、再修复、再复测**）
+  - 压测实测确认：`list` 场景比基线慢 **+538%**（6.8→43.4ms），根因是每篇 2 次 `SISMEMBER` + 3 次 `GET`
+  - 修复：`fillStatus` 改 **pipeline**（`executePipelined`）、`mergeCounts` 改 **MGET**，往返从「5×条数」降到 **2 次（与条数无关）**
+  - 复测：`list` 43.4→**11.0 ms（-75%）**、`hot` 44.7→**12.7 ms（-72%）**、`search` 134.1→**29.0 ms（-78%）**；
+    `detail`（1 篇）无明显变化（批量化收益被 pipeline 开销抵消，**批次越大越划算**）
+  - 详见 [docs/PERF.md](docs/PERF.md)
   - `NoteService.fillStatus` 对列表每条笔记逐个 `isMember`；`mergeCounts` 逐个 `get`。列表 10 条 = 30+ 次往返。
   - 改 pipeline 批处理，或 `SMISMEMBER` / `MGET`。
 

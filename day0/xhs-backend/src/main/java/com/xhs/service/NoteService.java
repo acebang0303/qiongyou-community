@@ -15,12 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -215,7 +219,11 @@ public class NoteService {
         return noteId;
     }
 
-    /** 点赞/收藏状态从 Redis 判断（Day3 改造） */
+    /**
+     * 点赞/收藏状态从 Redis 判断（Day3 改造）
+     * ★ P3-1：改用 pipeline 批量取，把「每篇 2 次 SISMEMBER」的 N+1 往返压成 1 次往返
+     */
+    @SuppressWarnings("unchecked")
     private void fillStatus(List<NoteVO> list, Long viewerId) {
         if (list == null || list.isEmpty()) {
             return;
@@ -224,15 +232,26 @@ public class NoteService {
             Set<Long> likedNotes = new HashSet<>();
             Set<Long> favoritedNotes = new HashSet<>();
             try {
-                for (NoteVO vo : list) {
-                    // ★ P1-7 修复：改用 StringRedisTemplate，与写侧（Lua）的裸字符串成员一致
-                    if (Boolean.TRUE.equals(stringRedisTemplate.opsForSet()
-                            .isMember(RedisKeys.like(vo.getId()), viewerId.toString()))) {
-                        likedNotes.add(vo.getId());
+                String uid = viewerId.toString();
+                List<Object> results = stringRedisTemplate.executePipelined(new SessionCallback<Object>() {
+                    @Override
+                    public <K, V> Object execute(RedisOperations<K, V> operations) {
+                        SetOperations<K, V> setOps = operations.opsForSet();
+                        for (NoteVO vo : list) {
+                            setOps.isMember((K) RedisKeys.like(vo.getId()), (V) uid);
+                            setOps.isMember((K) RedisKeys.favorite(vo.getId()), (V) uid);
+                        }
+                        return null; // 返回值由 pipeline 的结果列表给出
                     }
-                    if (Boolean.TRUE.equals(stringRedisTemplate.opsForSet()
-                            .isMember(RedisKeys.favorite(vo.getId()), viewerId.toString()))) {
-                        favoritedNotes.add(vo.getId());
+                });
+                // 结果按提交顺序返回：每篇对应 [isMember(like), isMember(favorite)]
+                for (int i = 0; i < list.size() && i * 2 + 1 < results.size(); i++) {
+                    Long noteId = list.get(i).getId();
+                    if (Boolean.TRUE.equals(results.get(i * 2))) {
+                        likedNotes.add(noteId);
+                    }
+                    if (Boolean.TRUE.equals(results.get(i * 2 + 1))) {
+                        favoritedNotes.add(noteId);
                     }
                 }
             } catch (Exception e) {
@@ -254,22 +273,37 @@ public class NoteService {
         }
     }
 
-    /** 点赞数/收藏数/分享数优先取 Redis（Day3 改造；★ P1-2 补 shareCount） */
+    /**
+     * 点赞数/收藏数/分享数优先取 Redis（Day3 改造；★ P1-2 补 shareCount）
+     * ★ P3-1：改用 MGET 一次取回，把「每篇 3 次 GET」的 N+1 往返压成 1 次往返
+     */
     private void mergeCounts(List<NoteVO> list) {
         if (list == null || list.isEmpty()) {
             return;
         }
         try {
+            List<String> keys = new ArrayList<>(list.size() * 3);
             for (NoteVO vo : list) {
-                String likeCount = stringRedisTemplate.opsForValue().get(RedisKeys.likeCount(vo.getId()));
+                keys.add(RedisKeys.likeCount(vo.getId()));
+                keys.add(RedisKeys.favoriteCount(vo.getId()));
+                keys.add(RedisKeys.shareCount(vo.getId()));
+            }
+            List<String> values = stringRedisTemplate.opsForValue().multiGet(keys);
+            if (values == null) {
+                return;
+            }
+            // MGET 结果与 keys 一一对应：每篇占连续三个槽位
+            for (int i = 0; i < list.size() && i * 3 + 2 < values.size(); i++) {
+                NoteVO vo = list.get(i);
+                String likeCount = values.get(i * 3);
+                String favoriteCount = values.get(i * 3 + 1);
+                String shareCount = values.get(i * 3 + 2);
                 if (likeCount != null) {
                     vo.setLikeCount(Integer.parseInt(likeCount));
                 }
-                String favoriteCount = stringRedisTemplate.opsForValue().get(RedisKeys.favoriteCount(vo.getId()));
                 if (favoriteCount != null) {
                     vo.setFavoriteCount(Integer.parseInt(favoriteCount));
                 }
-                String shareCount = stringRedisTemplate.opsForValue().get(RedisKeys.shareCount(vo.getId()));
                 if (shareCount != null) {
                     vo.setShareCount(Integer.parseInt(shareCount));
                 }
