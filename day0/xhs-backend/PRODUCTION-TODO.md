@@ -196,7 +196,9 @@
 
 ## P3 — 性能 / 安全细节（能体现深度的加分项）
 
-- [ ] **P3-1 消除 N+1 Redis 往返** ｜ M
+- [ ] **P3-1 消除 N+1 Redis 往返** ｜ M ｜ 🔴 **已实测确认：当前第一优先级的性能项**
+  - 📌 2026-10-07 压测实测：`list` 场景优化后比基线慢 **+538%**（6.8→43.4ms），根因就是这里的 N+1（每篇 2 次 `SISMEMBER` + 3 次 `GET`）。
+    详见 [docs/PERF.md](docs/PERF.md)。修法：改 pipeline / `MGET` / `SMISMEMBER` 批量一次往返。
   - `NoteService.fillStatus` 对列表每条笔记逐个 `isMember`；`mergeCounts` 逐个 `get`。列表 10 条 = 30+ 次往返。
   - 改 pipeline 批处理，或 `SMISMEMBER` / `MGET`。
 
@@ -214,8 +216,12 @@
 ## 面试叙事补强（非代码）
 
 - [x] **N-1 写一份项目 README** ｜ M ｜ ✅ 2026-10-07 — 见 [README.md](README.md)：技术栈、架构图、技术演进线、关键设计决策（面试可讲点）、快速开始、已知限制
-- [x] **N-2 整理压测数据** ｜ S ｜ ✅ 2026-10-07 — 见 [docs/PERF.md](docs/PERF.md)
-  - ⚠️ **如实说明**：仓库里只有 Day8 **限流场景**的验证数据（15000 次点赞中 12000 次被 429 拦截、搜索接口 0 错误），**没有"优化前 vs 优化后"对照**。文档记录了已有数据、明确列出缺口，并给出可复现的采集步骤（git worktree 取基线 + 同一 JMeter plan 压两轮）。**不要把没测过的数字写进简历。**
+- [x] **N-2 整理压测数据** ｜ S ｜ ✅ 2026-10-07（已完成**优化前后对照实测**）— 见 [docs/PERF.md](docs/PERF.md)
+  - 方法：`git worktree` 取基线 `593bffa`（Day1 全直查 MySQL）与当前 HEAD，两边都指向**独立压测库 `xhs_bench`**（3000 笔记/15 万点赞），同一个 JMeter 计划 `docs/bench/bench.jmx` 各压 1000 请求（零错误）
+  - **结果（真实，且出乎意料）**：`detail` 6.5→9.9ms、`list` 6.8→43.4ms、`hot` 9.5→44.7ms、`search` 6.9→134.1ms、`like` 3.6→5.3ms —— **优化后读接口更慢**
+  - **根因已定位**：读路径 **N+1 Redis 往返**（每篇笔记 2 次 `SISMEMBER` + 3 次 `GET`；10 篇列表 = 50 次往返）。证据：`detail`(1 篇) 只慢 3.4ms，`list`(10 篇) 慢 36.6ms → ≈3.7ms/篇，与「每篇 5 次往返」吻合
+  - 🚫 **不要在简历上写"QPS 提升 N 倍"**——当前实测是优化后更慢。这份数据的价值是**实测出 P3-1（消除 N+1）确是当前第一优先级**
+  - 脚本：`docs/bench/{bench.jmx,run-bench.sh,gen_bench.sql}`；压测库 `xhs_bench` 已保留，可复测
 - [x] **N-3 准备高频追问的答案** ｜ S ｜ ✅ 2026-10-07 — 见 [docs/INTERVIEW-QA.md](docs/INTERVIEW-QA.md)：14 条问答（认证/一致性/MQ 可靠性/缓存三兄弟/幂等/事务与 MQ/Feed 推拉/热榜衰减/限流/ES/序列化 bug/降级掩盖故障/测试基建坑/密码/后续规划），每条都能指到具体文件
 
 ---
