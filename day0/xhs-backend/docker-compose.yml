@@ -1,7 +1,12 @@
-version: "3.8"
-
-# 仿小红书高并发实训 —— 统一中间件环境
-# Day1 只需要 MySQL；Redis / RabbitMQ / Elasticsearch 在 Day2~Day8 逐步使用
+# 仿小红书高并发实训 —— 中间件 + 应用编排
+#
+# ★ P2-5 修复与增强：
+#   1) mysql 挂载 ../sql/init.sql 到初始化目录 —— 原文件注释写着"首次启动自动执行建库建表"，
+#      但根本没挂载脚本，全新环境起来是个空库（这正是之前 init.sql 与线上库漂移的根源）
+#   2) elasticsearch 改为从 es/Dockerfile 构建，把 IK 分词插件固化进镜像（容器重建不再丢插件）
+#   3) 新增 backend 服务，并放进 `app` profile：
+#      - `docker compose up -d`                 只起中间件（开发时后端仍在 IDE 里跑）
+#      - `docker compose --profile app up -d`   连后端一起起
 services:
   mysql:
     image: mysql:8.0
@@ -16,7 +21,8 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - mysql-data:/var/lib/mysql
-      # 首次启动自动执行建库建表与测试数据脚本
+      # 首次初始化（数据卷为空）时自动执行建库建表与测试数据脚本
+      - ../sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p123456"]
       interval: 5s
@@ -46,7 +52,7 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.2
+    build: ./es
     container_name: xhs-elasticsearch
     restart: unless-stopped
     ports:
@@ -57,6 +63,37 @@ services:
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
     volumes:
       - es-data:/usr/share/elasticsearch/data
+
+  backend:
+    build: .
+    container_name: xhs-backend
+    restart: unless-stopped
+    profiles: ["app"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    environment:
+      # 容器内用服务名互联，覆盖 application.yml 里的本地默认值（见 P2-4 的占位符）
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:mysql://mysql:3306/xhs?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      DB_USERNAME: root
+      DB_PASSWORD: "123456"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USERNAME: guest
+      RABBITMQ_PASSWORD: guest
+      ES_BASE_URL: http://elasticsearch:9200
+      JWT_SECRET: xhs-backend-jwt-secret-key-please-change-in-production-2026
 
 volumes:
   mysql-data:

@@ -12,3 +12,10 @@ management:
   endpoint:
     health:
       show-details: never
+
+# ★ P2-3：生产环境关闭接口文档（避免对外暴露内部接口清单）
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

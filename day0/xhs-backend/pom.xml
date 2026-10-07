@@ -15,7 +15,7 @@
     <artifactId>xhs-backend</artifactId>
     <version>1.0.0</version>
     <name>xhs-backend</name>
-    <description>仿小红书高并发内容社区系统（Day2：引入Redis）</description>
+    <description>仿小红书高并发内容社区系统（Redis 缓存/幂等/MQ 削峰/Feed 与热榜/ES 搜索/限流降级）</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -27,6 +27,8 @@
         <jjwt.version>0.11.5</jjwt.version>
         <!-- Spring Boot 2.7.18 的 BOM 不含 testcontainers，需自己定版本（1.19.x 仍支持 Java 8） -->
         <testcontainers.version>1.19.8</testcontainers.version>
+        <!-- springdoc 1.x 对应 Spring Boot 2.x（2.x 才对应 Boot 3） -->
+        <springdoc.version>1.7.0</springdoc.version>
     </properties>
 
     <dependencies>
@@ -80,14 +82,6 @@
             <version>3.5.5</version>
         </dependency>
 
-        <!-- MySQL 驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.32</version>
-            <scope>runtime</scope>
-        </dependency>
-
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -126,6 +120,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
+
+        <!-- ★ P2-3 新增：API 文档（Swagger UI: /swagger-ui/index.html） -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+        <!-- ★ P2-7：只保留新版驱动（版本由 Spring Boot BOM 管理）；
+             原先还并存一个 mysql:mysql-connector-java:5.1.32（上古驱动，会额外拉起
+             com.mysql.jdbc.AbandonedConnectionCleanupThread），已移除 -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>

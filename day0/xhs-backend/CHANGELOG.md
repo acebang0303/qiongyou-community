@@ -4,6 +4,111 @@
 
 ---
 
+## N-1 ~ N-3 面试叙事材料（2026-10-07）
+
+新增三份文档（非代码）：
+- [README.md](README.md)【新增】：技术栈、架构图、Day2→Day8→生产化的技术演进线、
+  关键设计决策（可直接当讲稿）、快速开始、已知限制
+- [docs/PERF.md](docs/PERF.md)【新增】：**如实**记录已有的 Day8 限流压测数据，
+  明确"优化前后对照数据尚缺"，并给出 `git worktree` 取基线 + 同一 JMeter plan 压两轮的复现步骤
+- [docs/INTERVIEW-QA.md](docs/INTERVIEW-QA.md)【新增】：14 条高频追问与答案，
+  全部对应当前实现、可指到具体文件
+
+**一条纪律**：简历与面试只写**真实测过的数字**。当前仓库没有优化前后对照数据，
+`PERF.md` 里写清了缺口与补测方法，在补测之前不要在简历上写 QPS/RT 的对比数字。
+
+---
+
+## P2-6 CI 校验脚本（ci.sh）（2026-10-07）
+
+### 决策
+仓库 remote 是 **Gitee**（`gitee.com/uncleliang/xhs-project-batch34`），GitHub Actions 不会自动触发；Gitee Go 的流水线格式冷门且本机无法实测。故**不接具体 CI 平台**，改为提供一个可被任意 CI 平台（或本地）直接复用的 `ci.sh`。
+
+### 方案
+`ci.sh`：
+- 默认 `mvn -B clean verify`（编译 + 打包 + Testcontainers 集成测试）
+- 先探测 `docker info`，Docker 不可用则给出明确提示（因为集成测试要起临时容器）
+- `./ci.sh --skip-tests` → 只编译打包，不需要 Docker
+
+接入任何 CI 时，只需要让流水线执行这一个脚本即可（GitHub Actions / Gitee Go / Jenkins 都一样）。
+
+### 验证（已实测）
+`./ci.sh` → `Tests run: 9, Failures: 0, Errors: 0`，`BUILD SUCCESS`，输出「校验通过」。
+
+---
+
+## P2-8 DB 迁移工具（Flyway/Liquibase）— 暂缓（2026-10-07）
+
+### 决策
+**暂缓，保留 `init.sql` 作为唯一 schema 真源。**
+
+### 理由
+P0-1 的红线是「`init.sql` 是库表结构的唯一真源」。引入 Flyway 会产生**两份 schema 定义**（`init.sql` 给 Docker 首次建库 + `db/migration/V*.sql`），除非把 `init.sql` 整个交给 Flyway 管（Docker 只建空库、由应用启动时跑迁移）——那是一次改变建库流程的较大重构。
+
+而当前项目 schema 变更频率低，P0-1 已把 `init.sql` 与线上库对齐、并修好了 compose 的挂载缺失，**没有实际痛点**。此时引入迁移工具属于"为了有而有"，反而增加漂移面。
+
+**什么时候该回头做**：schema 开始频繁演进、或多环境（dev/staging/prod）需要各自演进时，再按"Flyway 单一真源"方案一次性迁过来。
+
+---
+
+## P2-3 API 文档（springdoc / Swagger UI）（2026-10-07）
+
+### 问题
+没有接口文档，前后端联调只能靠读代码。
+
+### 方案
+- `springdoc-openapi-ui` **1.7.0**（**1.x 对应 Spring Boot 2.x，2.x 才对应 Boot 3**）
+- `OpenApiConfig`：填文档信息 + 声明 `bearerAuth` 安全方案，使 Swagger UI 上可直接 Authorize 后调受保护接口
+- 生产关闭：`application-prod.yml` 里 `springdoc.api-docs.enabled=false` + `swagger-ui.enabled=false`
+
+### 改动文件
+- `pom.xml`：springdoc 依赖（版本属性 `springdoc.version`）
+- `config/OpenApiConfig.java`【新增】
+- `src/main/resources/application-prod.yml`：关闭文档
+
+### 踩坑点
+- **版本要对齐大版本**：Spring Boot 2.x 必须用 springdoc **1.x**；用 2.x 会因 Spring Framework 版本不兼容而启动失败。
+- **要把 JWT 方案写进 OpenAPI**：否则 Swagger UI 里调受保护接口只能手动加 header；声明 `SecurityScheme(HTTP/bearer)` 后右上角会出现 Authorize 按钮。
+- **生产必须关掉文档**：接口清单也是攻击面（暴露内部接口、参数）。本项目 actuator 也是同样思路（只暴露三个端点）。
+- 文档路径 `/swagger-ui/**`、`/v3/api-docs/**` 不在 `/api/**` 下，因此**不受认证与限流拦截器影响**。
+
+### 验证（已实测）
+- dev：`GET /v3/api-docs` → OpenAPI 3.0.1、标题 `xhs-backend API`、安全方案 `[bearerAuth]`、**16 个接口**；`/swagger-ui/index.html` → 200
+- prod：`/v3/api-docs` 与 `/swagger-ui/index.html` 均 **404**（已关闭）
+
+---
+
+## P2-5 后端 Dockerfile + compose 修复（2026-10-07）
+
+### 问题
+1. 后端跑不进容器（compose 里只有中间件）
+2. **`docker-compose.yml` 注释声称"首次启动自动执行建库建表"，但根本没挂载 `init.sql`** → 全新环境 `compose up` 起来是个**空库**（这正是 P0-1 结构漂移的根源）
+3. ES 的 IK 插件是 `docker exec` 装进运行中容器的，容器一重建就丢
+
+### 方案
+- `Dockerfile`：多阶段（maven:3.9-eclipse-temurin-8 构建 → eclipse-temurin:8-jre 运行）；pom 单独一层缓存依赖
+- `.dockerignore`：排除 target/.git/.idea
+- `es/Dockerfile`：`ES 8.8.2` + `analysis-ik` 插件固化进镜像
+- `docker-compose.yml`：
+  - mysql 挂载 `../sql/init.sql` → `/docker-entrypoint-initdb.d/01-init.sql`
+  - elasticsearch 由 `image:` 改为 `build: ./es`
+  - 新增 `backend` 服务，放进 **`app` profile**：`docker compose up -d` 只起中间件（开发时后端仍在 IDE 跑），`docker compose --profile app up -d` 才连后端一起起
+  - 删掉过时的 `version:` 字段
+
+### 踩坑点
+- **pom 引用了 `../sql/init.sql`**（P2-2 的测试资源拷贝），但 Docker 构建上下文是 `xhs-backend/`，`../sql` 不存在 → 在 Dockerfile 里先 `mkdir -p /sql` 建个空目录兜底，否则 `process-test-resources` 阶段会报错。**pom 依赖构建上下文之外的路径，是跨构建方式的隐性耦合。**
+- **挂载 init.sql 对已有数据卷不生效**：MySQL 只在数据目录为空时执行 `docker-entrypoint-initdb.d`。所以本次重建不会重跑脚本（数据安全），要真正验证"全新环境能自动建库"必须清空数据卷——这正是该挂载存在的意义。
+- **业务错误与认证错误的 HTTP 语义不一致（既有设计，非本次引入）**：无 token 访问受保护接口 → HTTP 200 + body `code=401`；无效 token → 真 HTTP 401。前端两种都能处理（axios 拦 HTTP 401 清登录态，业务 code 走 toast）。若想统一需另议。
+- 构建耗时主要在 `dependency:go-offline`（约 9 分钟，首次下全部依赖）；之后改源码重建只需十几秒（依赖层命中缓存）。
+
+### 验证（已实测）
+- `docker compose --profile app build` → `xhs-backend-backend`、`xhs-backend-elasticsearch` 两个镜像构建成功
+- `docker compose --profile app up -d` → 5 容器运行；mysql/es 因配置变更被重建，**数据卷保留**（笔记数仍 20）
+- 新 ES 容器 `bin/elasticsearch-plugin list` → `analysis-ik`（插件已固化，重建不再丢）
+- 后端容器 8080：登录 200（JWT+BCrypt）、搜「三亚」经容器内 ES+IK 返回 3 条带游标、`/actuator/health` overall UP
+
+---
+
 ## P2-4 多环境配置（2026-10-07）
 
 ### 问题

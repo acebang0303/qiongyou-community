@@ -172,14 +172,25 @@
   - 覆盖：Lua 幂等（含 100 并发）、缓存防穿透/空对象 TTL、对账回填与幂等；ES 指向死端口以覆盖降级路径
   - ⚠️ 关键坑：基类上用 `@Container` 会导致每个测试类重启容器、端口变化，而 Spring 上下文缓存仍指旧端口 → 必须用 singleton 容器模式
   - 详情见 [CHANGELOG.md](CHANGELOG.md#p2-2-核心集成测试testcontainers2026-10-07)
-- [ ] **P2-3 API 文档** ｜ S — Swagger / springdoc-openapi。
+- [x] **P2-3 API 文档** ｜ S ｜ ✅ 2026-10-07 — springdoc-openapi-ui 1.7.0（Boot 2.x 需 1.x）+ `OpenApiConfig`（含 bearerAuth 方案）；prod profile 关闭文档
+  - 验收：dev `/v3/api-docs` 16 接口 + `/swagger-ui/index.html` 200；prod 两者均 404
+  - 详情见 [CHANGELOG.md](CHANGELOG.md#p2-3-api-文档springdoc--swagger-ui2026-10-07)
 - [x] **P2-4 多环境配置** ｜ S ｜ ✅ 2026-10-07 — `application.yml` 只留公共项，环境相关（DB/Redis/MQ/JWT/ES/端口）走 `${ENV:默认值}`；拆出 `application-dev.yml`（打 SQL、debug、health 详细）与 `application-prod.yml`（关 SQL、info、health 精简）
   - 验收：`SPRING_PROFILES_ACTIVE=prod SERVER_PORT=8082` 启动 → prod 生效、端口被覆盖、零 SQL 打印；`mvn test` 仍 9/9
   - 详情见 [CHANGELOG.md](CHANGELOG.md#p2-4-多环境配置2026-10-07)
-- [ ] **P2-5 后端 Dockerfile** ｜ S — 现在只有中间件的 `docker-compose.yml`，后端跑不进容器。
-- [ ] **P2-6 CI 流水线** ｜ M — 编译 + 测试 + 构建镜像。
-- [ ] **P2-7 清理 `pom.xml`** ｜ S — 重复的 MySQL 驱动（`mysql-connector-java:5.1.32` 与 `mysql-connector-j`）；`<description>` 还写着"Day2：引入Redis"。
-- [ ] **P2-8 数据库迁移工具** ｜ M — Flyway / Liquibase，根治 P0-1 的结构漂移。
+- [x] **P2-5 后端 Dockerfile + compose 修复** ｜ S ｜ ✅ 2026-10-07
+  - 新增多阶段 `Dockerfile`、`.dockerignore`、`es/Dockerfile`（固化 IK 插件）
+  - 修复 compose：挂载 `init.sql`（此前注释说会自动建库但**根本没挂**→全新环境是空库）、ES 改 build、新增 `backend` 服务（`app` profile）
+  - 验收：两镜像构建成功；`--profile app up -d` 后 5 容器运行、数据卷保留（20 篇）；新 ES 带 IK；容器化后端登录/搜索/health 均正常
+  - 详情见 [CHANGELOG.md](CHANGELOG.md#p2-5-后端-dockerfile--compose-修复2026-10-07)
+- [x] **P2-6 CI** ｜ M ｜ ✅ 2026-10-07 — 仓库在 Gitee，不接具体平台，改为可复用的 `ci.sh`（clean verify + Docker 探测 + `--skip-tests`）
+  - 验收：`./ci.sh` → 9/9 测试通过、BUILD SUCCESS
+  - 详情见 [CHANGELOG.md](CHANGELOG.md#p2-6-ci-校验脚本cish2026-10-07)
+
+- [x] **P2-7 清理 `pom.xml`** ｜ S ｜ ✅ 2026-10-07 — 删除重复的 `mysql:mysql-connector-java:5.1.32`（只留 Boot 管理的 `com.mysql:mysql-connector-j`）；更新 `<description>`
+  - 验收：`mvn test` 9/9 通过
+
+- [ ] **P2-8 数据库迁移工具** ｜ M ｜ ⏸ **暂缓（用户决定）** — 与「init.sql 单一真源」红线冲突，会产生双份 schema；当前 schema 变更频率低、无实际痛点。待 schema 频繁演进或多环境需各自演进时，按「Flyway 单一真源」一次性迁移。理由见 [CHANGELOG.md](CHANGELOG.md#p2-8-db-迁移工具flywayliquibase--暂缓2026-10-07)
 
 ---
 
@@ -202,12 +213,10 @@
 
 ## 面试叙事补强（非代码）
 
-- [ ] **N-1 写一份项目 README** ｜ M — 架构图 + 技术演进线（4 条 SQL → Redis → Lua → 缓存三兄弟 → MQ → Feed/热榜 → ES/限流降级）+ 关键取舍。
-- [ ] **N-2 整理压测数据** ｜ S — `day8/ratelimit/report` 已有 JMeter 结果，提炼成"优化前 vs 优化后 QPS / RT / P95 / MySQL 压力"对照表，能报出具体数字。
-- [ ] **N-3 准备高频追问的答案** ｜ S — 至少三条：
-  - "Redis 和 MySQL 不一致怎么办" → 对账任务（P1-7）
-  - "用户身份怎么保证" → 认证（P0-2）
-  - "MQ 消息丢了/重复了怎么办" → confirm + 幂等消费 + DLX（P1-5/6）
+- [x] **N-1 写一份项目 README** ｜ M ｜ ✅ 2026-10-07 — 见 [README.md](README.md)：技术栈、架构图、技术演进线、关键设计决策（面试可讲点）、快速开始、已知限制
+- [x] **N-2 整理压测数据** ｜ S ｜ ✅ 2026-10-07 — 见 [docs/PERF.md](docs/PERF.md)
+  - ⚠️ **如实说明**：仓库里只有 Day8 **限流场景**的验证数据（15000 次点赞中 12000 次被 429 拦截、搜索接口 0 错误），**没有"优化前 vs 优化后"对照**。文档记录了已有数据、明确列出缺口，并给出可复现的采集步骤（git worktree 取基线 + 同一 JMeter plan 压两轮）。**不要把没测过的数字写进简历。**
+- [x] **N-3 准备高频追问的答案** ｜ S ｜ ✅ 2026-10-07 — 见 [docs/INTERVIEW-QA.md](docs/INTERVIEW-QA.md)：14 条问答（认证/一致性/MQ 可靠性/缓存三兄弟/幂等/事务与 MQ/Feed 推拉/热榜衰减/限流/ES/序列化 bug/降级掩盖故障/测试基建坑/密码/后续规划），每条都能指到具体文件
 
 ---
 
