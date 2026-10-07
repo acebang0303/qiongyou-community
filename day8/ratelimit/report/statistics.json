@@ -1,0 +1,50 @@
+{
+  "GET /api/notes/search" : {
+    "transaction" : "GET /api/notes/search",
+    "sampleCount" : 600,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 62.446666666666715,
+    "medianResTime" : 36.0,
+    "minResTime" : 23.0,
+    "maxResTime" : 436.0,
+    "pct1ResTime" : 166.4999999999999,
+    "pct2ResTime" : 264.74999999999966,
+    "pct3ResTime" : 339.9000000000001,
+    "throughput" : 120.72434607645876,
+    "receivedKBytesPerSec" : 403.672032193159,
+    "sentKBytesPerSec" : 20.513707243460765
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 15600,
+    "errorCount" : 12000,
+    "errorPct" : 76.92308,
+    "meanResTime" : 52.01474358974378,
+    "medianResTime" : 33.0,
+    "minResTime" : 1.0,
+    "maxResTime" : 585.0,
+    "pct1ResTime" : 106.0,
+    "pct2ResTime" : 155.0,
+    "pct3ResTime" : 338.9299999999985,
+    "throughput" : 3136.3088057901086,
+    "receivedKBytesPerSec" : 1322.1851282921189,
+    "sentKBytesPerSec" : 697.8475572979493
+  },
+  "POST /api/notes/1/like" : {
+    "transaction" : "POST /api/notes/1/like",
+    "sampleCount" : 15000,
+    "errorCount" : 12000,
+    "errorPct" : 80.0,
+    "meanResTime" : 51.59746666666667,
+    "medianResTime" : 32.0,
+    "minResTime" : 1.0,
+    "maxResTime" : 585.0,
+    "pct1ResTime" : 106.0,
+    "pct2ResTime" : 149.0,
+    "pct3ResTime" : 338.9299999999985,
+    "throughput" : 5183.137525915688,
+    "receivedKBytesPerSec" : 1579.2324907135453,
+    "sentKBytesPerSec" : 1164.1812802349689
+  }
+}

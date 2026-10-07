@@ -1,0 +1,790 @@
+2026-10-06 20:14:22,482 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2026-10-06 20:14:22,500 INFO o.a.j.JMeter: Loading user properties from: D:\SM\apache-jmeter-5.6.3\apache-jmeter-5.6.3\bin\user.properties
+2026-10-06 20:14:22,501 INFO o.a.j.JMeter: Loading system properties from: D:\SM\apache-jmeter-5.6.3\apache-jmeter-5.6.3\bin\system.properties
+2026-10-06 20:14:22,506 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: Version 5.6.3
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: java.version=21.0.4
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: java.vm.name=Java HotSpot(TM) 64-Bit Server VM
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: os.name=Windows 11
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: os.arch=amd64
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: os.version=10.0
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: file.encoding=UTF-8
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: java.awt.headless=true
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: Max memory     =1073741824
+2026-10-06 20:14:22,507 INFO o.a.j.JMeter: Available Processors =20
+2026-10-06 20:14:22,515 INFO o.a.j.JMeter: Default Locale=English (EN)
+2026-10-06 20:14:22,515 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2026-10-06 20:14:22,515 INFO o.a.j.JMeter: JMeterHome=D:\SM\apache-jmeter-5.6.3\apache-jmeter-5.6.3
+2026-10-06 20:14:22,515 INFO o.a.j.JMeter: user.dir  =D:\software\xhs课程\xhs-project-batch34\day8\ratelimit
+2026-10-06 20:14:22,516 INFO o.a.j.JMeter: PWD       =D:\software\xhs课程\xhs-project-batch34\day8\ratelimit
+2026-10-06 20:14:22,946 INFO o.a.j.JMeter: IP: 192.168.2.65 Name: MSI FullName: 192.168.2.65
+2026-10-06 20:14:22,959 INFO o.a.j.JMeter: Setting property 'jmeter.reportgenerator.outputdir' to:'D:\software\xhs课程\xhs-project-batch34\day8\ratelimit\report-comments'
+2026-10-06 20:14:22,961 INFO o.a.j.s.FileServer: Default base='D:\software\xhs课程\xhs-project-batch34\day8\ratelimit'
+2026-10-06 20:14:22,963 INFO o.a.j.s.FileServer: Set new base='D:\software\xhs课程\xhs-project-batch34\day8\ratelimit'
+2026-10-06 20:14:23,133 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
+2026-10-06 20:14:23,163 INFO o.a.j.s.SaveService: Using SaveService properties version 5.0
+2026-10-06 20:14:23,167 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
+2026-10-06 20:14:23,170 INFO o.a.j.s.SaveService: Loading file: comments-test.jmx
+2026-10-06 20:14:23,222 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-10-06 20:14:23,222 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-10-06 20:14:23,222 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-10-06 20:14:23,222 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2026-10-06 20:14:23,222 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
+2026-10-06 20:14:23,222 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
+2026-10-06 20:14:23,240 INFO o.a.j.JMeter: Creating summariser <summary>
+2026-10-06 20:14:23,250 INFO o.a.j.r.d.ReportGenerator: ReportGenerator will use for Parsing the separator: ','
+2026-10-06 20:14:23,250 INFO o.a.j.r.d.ReportGenerator: Will generate report at end of test from  results file: result-comments.jtl
+2026-10-06 20:14:23,250 INFO o.a.j.r.d.ReportGenerator: Reading report generator properties from: D:\SM\apache-jmeter-5.6.3\apache-jmeter-5.6.3\bin\reportgenerator.properties
+2026-10-06 20:14:23,250 INFO o.a.j.r.d.ReportGenerator: Merging with JMeter properties
+2026-10-06 20:14:23,254 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.temp_dir' not found, using default value 'temp' instead.
+2026-10-06 20:14:23,256 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.apdex_per_transaction' not found, using default value 'null' instead.
+2026-10-06 20:14:23,257 INFO o.a.j.r.c.ReportGeneratorConfiguration: apdex_per_transaction is empty, not APDEX per transaction customization
+2026-10-06 20:14:23,257 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.sample_filter' not found, using default value 'null' instead.
+2026-10-06 20:14:23,257 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.report_title' not found, using default value 'null' instead.
+2026-10-06 20:14:23,257 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.start_date' not found, using default value 'null' instead.
+2026-10-06 20:14:23,257 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.end_date' not found, using default value 'null' instead.
+2026-10-06 20:14:23,257 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.date_format' not found, using default value 'null' instead.
+2026-10-06 20:14:23,257 INFO o.a.j.r.c.ReportGeneratorConfiguration: Will use date range start date: null, end date: null
+2026-10-06 20:14:23,261 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.totalTPS.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,261 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.activeThreadsOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.timeVsThreads.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimeDistribution.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.transactionsPerSecond.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimePercentiles.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimePercentilesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.responseTimesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.connectTimeOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,262 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.graph.latenciesOverTime.exclude_controllers' not found, using default value 'false' instead.
+2026-10-06 20:14:23,263 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.filters_only_sample_series' not found, using default value 'true' instead.
+2026-10-06 20:14:23,263 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.series_filter' not found, using default value '' instead.
+2026-10-06 20:14:23,263 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.json.show_controllers_only' not found, using default value 'false' instead.
+2026-10-06 20:14:23,263 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.filters_only_sample_series' not found, using default value 'true' instead.
+2026-10-06 20:14:23,264 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.series_filter' not found, using default value '' instead.
+2026-10-06 20:14:23,264 INFO o.a.j.r.c.ReportGeneratorConfiguration: Property 'jmeter.reportgenerator.exporter.html.show_controllers_only' not found, using default value 'false' instead.
+2026-10-06 20:14:23,276 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2026-10-06 20:14:23,277 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2026-10-06 20:14:23,277 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2026-10-06 20:14:23,280 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must contain the string: '.functions.'
+2026-10-06 20:14:23,281 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must not contain the string: '.gui.'
+2026-10-06 20:14:23,351 INFO o.a.j.JMeter: Running test (1791288863351)
+2026-10-06 20:14:23,364 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : 1-评论压测(200并发/超100QPS)
+2026-10-06 20:14:23,364 INFO o.a.j.e.StandardJMeterEngine: Starting 200 threads for group 1-评论压测(200并发/超100QPS).
+2026-10-06 20:14:23,365 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2026-10-06 20:14:23,365 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=200 ramp-up=1 delayedStart=false
+2026-10-06 20:14:23,374 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-1
+2026-10-06 20:14:23,378 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-2
+2026-10-06 20:14:23,383 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-3
+2026-10-06 20:14:23,387 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-4
+2026-10-06 20:14:23,392 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-5
+2026-10-06 20:14:23,397 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-6
+2026-10-06 20:14:23,400 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-7
+2026-10-06 20:14:23,401 INFO o.a.j.p.h.s.HTTPHCAbstractImpl: Local host = MSI
+2026-10-06 20:14:23,406 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-8
+2026-10-06 20:14:23,410 INFO o.a.j.p.h.s.HTTPHC4Impl: HTTP request retry count = 0
+2026-10-06 20:14:23,411 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-9
+2026-10-06 20:14:23,412 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2026-10-06 20:14:23,412 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 2 : 2-搜索压测(限速300/s,低于500)
+2026-10-06 20:14:23,412 INFO o.a.j.e.StandardJMeterEngine: Starting 20 threads for group 2-搜索压测(限速300/s,低于500).
+2026-10-06 20:14:23,412 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2026-10-06 20:14:23,413 INFO o.a.j.t.ThreadGroup: Starting thread group... number=2 threads=20 ramp-up=1 delayedStart=false
+2026-10-06 20:14:23,413 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-1
+2026-10-06 20:14:23,413 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2026-10-06 20:14:23,413 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to UTF-8
+2026-10-06 20:14:23,413 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2026-10-06 20:14:23,413 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2026-10-06 20:14:23,414 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-10
+2026-10-06 20:14:23,416 INFO o.a.j.t.ThreadGroup: Started thread group number 2
+2026-10-06 20:14:23,416 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2026-10-06 20:14:23,420 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-11
+2026-10-06 20:14:23,425 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-12
+2026-10-06 20:14:23,430 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-13
+2026-10-06 20:14:23,434 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-14
+2026-10-06 20:14:23,438 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-15
+2026-10-06 20:14:23,444 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-16
+2026-10-06 20:14:23,448 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-17
+2026-10-06 20:14:23,453 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-18
+2026-10-06 20:14:23,457 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-19
+2026-10-06 20:14:23,463 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-20
+2026-10-06 20:14:23,464 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-2
+2026-10-06 20:14:23,467 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-21
+2026-10-06 20:14:23,472 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-22
+2026-10-06 20:14:23,477 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-23
+2026-10-06 20:14:23,482 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-24
+2026-10-06 20:14:23,487 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-25
+2026-10-06 20:14:23,492 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-26
+2026-10-06 20:14:23,497 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-27
+2026-10-06 20:14:23,501 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-28
+2026-10-06 20:14:23,506 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-29
+2026-10-06 20:14:23,511 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-30
+2026-10-06 20:14:23,515 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-3
+2026-10-06 20:14:23,516 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-31
+2026-10-06 20:14:23,522 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-32
+2026-10-06 20:14:23,526 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-33
+2026-10-06 20:14:23,530 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-34
+2026-10-06 20:14:23,536 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-35
+2026-10-06 20:14:23,541 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-36
+2026-10-06 20:14:23,546 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-37
+2026-10-06 20:14:23,552 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-38
+2026-10-06 20:14:23,556 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-39
+2026-10-06 20:14:23,561 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-40
+2026-10-06 20:14:23,565 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-4
+2026-10-06 20:14:23,566 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-41
+2026-10-06 20:14:23,571 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-42
+2026-10-06 20:14:23,577 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-43
+2026-10-06 20:14:23,582 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-44
+2026-10-06 20:14:23,586 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-45
+2026-10-06 20:14:23,591 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-46
+2026-10-06 20:14:23,595 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-47
+2026-10-06 20:14:23,602 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-48
+2026-10-06 20:14:23,607 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-49
+2026-10-06 20:14:23,611 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-50
+2026-10-06 20:14:23,616 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-5
+2026-10-06 20:14:23,617 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-51
+2026-10-06 20:14:23,621 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-52
+2026-10-06 20:14:23,626 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-53
+2026-10-06 20:14:23,632 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-54
+2026-10-06 20:14:23,637 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-55
+2026-10-06 20:14:23,640 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-56
+2026-10-06 20:14:23,646 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-57
+2026-10-06 20:14:23,651 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-58
+2026-10-06 20:14:23,657 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-59
+2026-10-06 20:14:23,661 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-60
+2026-10-06 20:14:23,665 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-6
+2026-10-06 20:14:23,666 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-61
+2026-10-06 20:14:23,672 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-62
+2026-10-06 20:14:23,676 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-63
+2026-10-06 20:14:23,682 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-64
+2026-10-06 20:14:23,686 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-65
+2026-10-06 20:14:23,690 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-66
+2026-10-06 20:14:23,696 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-67
+2026-10-06 20:14:23,701 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-68
+2026-10-06 20:14:23,706 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-69
+2026-10-06 20:14:23,711 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-70
+2026-10-06 20:14:23,715 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-7
+2026-10-06 20:14:23,716 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-71
+2026-10-06 20:14:23,721 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-72
+2026-10-06 20:14:23,727 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-73
+2026-10-06 20:14:23,731 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-74
+2026-10-06 20:14:23,737 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-75
+2026-10-06 20:14:23,741 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-76
+2026-10-06 20:14:23,747 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-77
+2026-10-06 20:14:23,752 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-78
+2026-10-06 20:14:23,756 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-79
+2026-10-06 20:14:23,761 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-80
+2026-10-06 20:14:23,766 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-8
+2026-10-06 20:14:23,767 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-81
+2026-10-06 20:14:23,772 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-82
+2026-10-06 20:14:23,776 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-83
+2026-10-06 20:14:23,781 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-84
+2026-10-06 20:14:23,787 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-85
+2026-10-06 20:14:23,791 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-86
+2026-10-06 20:14:23,796 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-87
+2026-10-06 20:14:23,802 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-88
+2026-10-06 20:14:23,806 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-89
+2026-10-06 20:14:23,812 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-90
+2026-10-06 20:14:23,815 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-9
+2026-10-06 20:14:23,818 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-91
+2026-10-06 20:14:23,823 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-92
+2026-10-06 20:14:23,826 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-93
+2026-10-06 20:14:23,831 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-94
+2026-10-06 20:14:23,837 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-95
+2026-10-06 20:14:23,841 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-96
+2026-10-06 20:14:23,846 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-97
+2026-10-06 20:14:23,852 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-98
+2026-10-06 20:14:23,857 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-99
+2026-10-06 20:14:23,861 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-100
+2026-10-06 20:14:23,865 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-10
+2026-10-06 20:14:23,866 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-101
+2026-10-06 20:14:23,871 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-102
+2026-10-06 20:14:23,876 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-103
+2026-10-06 20:14:23,882 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-104
+2026-10-06 20:14:23,887 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-105
+2026-10-06 20:14:23,891 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-106
+2026-10-06 20:14:23,896 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-107
+2026-10-06 20:14:23,901 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-108
+2026-10-06 20:14:23,906 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-109
+2026-10-06 20:14:23,915 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-11
+2026-10-06 20:14:23,915 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-110
+2026-10-06 20:14:23,917 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-111
+2026-10-06 20:14:23,921 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-112
+2026-10-06 20:14:23,927 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-113
+2026-10-06 20:14:23,932 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-114
+2026-10-06 20:14:23,937 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-115
+2026-10-06 20:14:23,942 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-116
+2026-10-06 20:14:23,947 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-117
+2026-10-06 20:14:23,955 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-118
+2026-10-06 20:14:23,957 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-119
+2026-10-06 20:14:23,962 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-120
+2026-10-06 20:14:23,965 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-12
+2026-10-06 20:14:23,970 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-121
+2026-10-06 20:14:23,972 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-122
+2026-10-06 20:14:23,976 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-123
+2026-10-06 20:14:23,981 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-124
+2026-10-06 20:14:23,987 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-125
+2026-10-06 20:14:23,993 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-126
+2026-10-06 20:14:23,997 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-127
+2026-10-06 20:14:24,002 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-128
+2026-10-06 20:14:24,007 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-129
+2026-10-06 20:14:24,012 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-130
+2026-10-06 20:14:24,015 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-13
+2026-10-06 20:14:24,017 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-131
+2026-10-06 20:14:24,022 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-132
+2026-10-06 20:14:24,027 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-133
+2026-10-06 20:14:24,031 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-134
+2026-10-06 20:14:24,036 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-135
+2026-10-06 20:14:24,041 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-136
+2026-10-06 20:14:24,047 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-137
+2026-10-06 20:14:24,051 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-138
+2026-10-06 20:14:24,057 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-139
+2026-10-06 20:14:24,061 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-140
+2026-10-06 20:14:24,065 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-14
+2026-10-06 20:14:24,066 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-141
+2026-10-06 20:14:24,071 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-142
+2026-10-06 20:14:24,076 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-143
+2026-10-06 20:14:24,081 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-144
+2026-10-06 20:14:24,087 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-145
+2026-10-06 20:14:24,091 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-146
+2026-10-06 20:14:24,096 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-147
+2026-10-06 20:14:24,101 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-148
+2026-10-06 20:14:24,106 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-149
+2026-10-06 20:14:24,111 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-150
+2026-10-06 20:14:24,115 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-15
+2026-10-06 20:14:24,117 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-151
+2026-10-06 20:14:24,121 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-152
+2026-10-06 20:14:24,126 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-153
+2026-10-06 20:14:24,131 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-154
+2026-10-06 20:14:24,137 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-155
+2026-10-06 20:14:24,141 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-156
+2026-10-06 20:14:24,146 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-157
+2026-10-06 20:14:24,152 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-158
+2026-10-06 20:14:24,157 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-159
+2026-10-06 20:14:24,161 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-160
+2026-10-06 20:14:24,165 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-16
+2026-10-06 20:14:24,166 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-161
+2026-10-06 20:14:24,171 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-162
+2026-10-06 20:14:24,176 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-163
+2026-10-06 20:14:24,181 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-164
+2026-10-06 20:14:24,186 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-165
+2026-10-06 20:14:24,191 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-166
+2026-10-06 20:14:24,196 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-167
+2026-10-06 20:14:24,202 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-168
+2026-10-06 20:14:24,206 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-169
+2026-10-06 20:14:24,211 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-170
+2026-10-06 20:14:24,215 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-17
+2026-10-06 20:14:24,216 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-171
+2026-10-06 20:14:24,221 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-172
+2026-10-06 20:14:24,227 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-173
+2026-10-06 20:14:24,231 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-174
+2026-10-06 20:14:24,235 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-175
+2026-10-06 20:14:24,241 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-176
+2026-10-06 20:14:24,246 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-177
+2026-10-06 20:14:24,251 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-178
+2026-10-06 20:14:24,256 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-179
+2026-10-06 20:14:24,261 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-180
+2026-10-06 20:14:24,265 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-18
+2026-10-06 20:14:24,266 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-181
+2026-10-06 20:14:24,271 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-182
+2026-10-06 20:14:24,277 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-183
+2026-10-06 20:14:24,281 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-184
+2026-10-06 20:14:24,285 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-185
+2026-10-06 20:14:24,291 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-186
+2026-10-06 20:14:24,296 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-187
+2026-10-06 20:14:24,302 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-188
+2026-10-06 20:14:24,306 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-189
+2026-10-06 20:14:24,311 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-190
+2026-10-06 20:14:24,315 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-19
+2026-10-06 20:14:24,316 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-191
+2026-10-06 20:14:24,322 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-192
+2026-10-06 20:14:24,326 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-193
+2026-10-06 20:14:24,331 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-194
+2026-10-06 20:14:24,336 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-195
+2026-10-06 20:14:24,341 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-196
+2026-10-06 20:14:24,347 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-197
+2026-10-06 20:14:24,351 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-198
+2026-10-06 20:14:24,356 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-199
+2026-10-06 20:14:24,361 INFO o.a.j.t.JMeterThread: Thread started: 1-评论压测(200并发/超100QPS) 1-200
+2026-10-06 20:14:24,365 INFO o.a.j.t.JMeterThread: Thread started: 2-搜索压测(限速300/s,低于500) 2-20
+2026-10-06 20:14:24,635 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-108
+2026-10-06 20:14:24,635 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-108
+2026-10-06 20:14:24,651 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-111
+2026-10-06 20:14:24,651 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-111
+2026-10-06 20:14:24,699 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-126
+2026-10-06 20:14:24,699 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-126
+2026-10-06 20:14:24,700 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-50
+2026-10-06 20:14:24,701 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-50
+2026-10-06 20:14:24,702 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-76
+2026-10-06 20:14:24,702 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-76
+2026-10-06 20:14:24,702 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-82
+2026-10-06 20:14:24,702 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-82
+2026-10-06 20:14:24,703 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-132
+2026-10-06 20:14:24,703 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-132
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-64
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-59
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-64
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-59
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-62
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-62
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-34
+2026-10-06 20:14:24,704 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-34
+2026-10-06 20:14:24,706 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-171
+2026-10-06 20:14:24,706 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-84
+2026-10-06 20:14:24,706 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-171
+2026-10-06 20:14:24,706 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-84
+2026-10-06 20:14:24,706 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-11
+2026-10-06 20:14:24,706 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-11
+2026-10-06 20:14:24,707 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-143
+2026-10-06 20:14:24,707 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-143
+2026-10-06 20:14:24,709 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-100
+2026-10-06 20:14:24,709 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-100
+2026-10-06 20:14:24,711 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-28
+2026-10-06 20:14:24,711 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-28
+2026-10-06 20:14:24,711 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-98
+2026-10-06 20:14:24,711 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-98
+2026-10-06 20:14:24,713 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-95
+2026-10-06 20:14:24,713 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-144
+2026-10-06 20:14:24,713 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-95
+2026-10-06 20:14:24,713 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-144
+2026-10-06 20:14:24,718 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-85
+2026-10-06 20:14:24,718 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-85
+2026-10-06 20:14:24,723 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-134
+2026-10-06 20:14:24,723 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-48
+2026-10-06 20:14:24,723 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-134
+2026-10-06 20:14:24,723 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-67
+2026-10-06 20:14:24,723 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-48
+2026-10-06 20:14:24,723 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-67
+2026-10-06 20:14:24,731 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-8
+2026-10-06 20:14:24,731 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-8
+2026-10-06 20:14:24,731 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-41
+2026-10-06 20:14:24,731 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-4
+2026-10-06 20:14:24,731 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-41
+2026-10-06 20:14:24,731 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-4
+2026-10-06 20:14:24,733 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-119
+2026-10-06 20:14:24,733 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-119
+2026-10-06 20:14:24,735 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-80
+2026-10-06 20:14:24,735 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-80
+2026-10-06 20:14:24,736 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-35
+2026-10-06 20:14:24,736 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-35
+2026-10-06 20:14:24,743 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-27
+2026-10-06 20:14:24,743 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-27
+2026-10-06 20:14:24,749 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-106
+2026-10-06 20:14:24,749 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-106
+2026-10-06 20:14:24,753 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-20
+2026-10-06 20:14:24,753 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-20
+2026-10-06 20:14:24,757 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-149
+2026-10-06 20:14:24,757 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-149
+2026-10-06 20:14:24,764 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-90
+2026-10-06 20:14:24,764 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-90
+2026-10-06 20:14:24,770 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-129
+2026-10-06 20:14:24,770 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-129
+2026-10-06 20:14:24,774 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-147
+2026-10-06 20:14:24,774 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-147
+2026-10-06 20:14:24,777 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-138
+2026-10-06 20:14:24,777 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-138
+2026-10-06 20:14:24,786 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-123
+2026-10-06 20:14:24,786 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-151
+2026-10-06 20:14:24,786 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-123
+2026-10-06 20:14:24,786 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-151
+2026-10-06 20:14:24,795 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-91
+2026-10-06 20:14:24,795 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-91
+2026-10-06 20:14:24,796 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-124
+2026-10-06 20:14:24,797 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-124
+2026-10-06 20:14:24,802 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-121
+2026-10-06 20:14:24,802 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-121
+2026-10-06 20:14:24,804 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-58
+2026-10-06 20:14:24,804 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-58
+2026-10-06 20:14:24,816 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-43
+2026-10-06 20:14:24,816 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-43
+2026-10-06 20:14:24,820 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-172
+2026-10-06 20:14:24,820 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-172
+2026-10-06 20:14:24,826 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-1
+2026-10-06 20:14:24,826 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-1
+2026-10-06 20:14:24,832 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-19
+2026-10-06 20:14:24,832 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-19
+2026-10-06 20:14:24,836 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-117
+2026-10-06 20:14:24,836 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-7
+2026-10-06 20:14:24,836 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-117
+2026-10-06 20:14:24,836 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-7
+2026-10-06 20:14:24,842 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-78
+2026-10-06 20:14:24,842 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-78
+2026-10-06 20:14:24,856 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-32
+2026-10-06 20:14:24,856 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-32
+2026-10-06 20:14:24,860 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-131
+2026-10-06 20:14:24,861 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-131
+2026-10-06 20:14:24,868 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-133
+2026-10-06 20:14:24,868 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-133
+2026-10-06 20:14:24,873 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-25
+2026-10-06 20:14:24,873 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-25
+2026-10-06 20:14:24,877 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-116
+2026-10-06 20:14:24,877 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-116
+2026-10-06 20:14:24,878 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-52
+2026-10-06 20:14:24,878 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-52
+2026-10-06 20:14:24,883 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-24
+2026-10-06 20:14:24,883 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-24
+2026-10-06 20:14:24,888 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-122
+2026-10-06 20:14:24,888 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-122
+2026-10-06 20:14:24,899 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-83
+2026-10-06 20:14:24,899 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-83
+2026-10-06 20:14:24,904 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-2
+2026-10-06 20:14:24,906 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-2
+2026-10-06 20:14:24,912 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-65
+2026-10-06 20:14:24,912 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-65
+2026-10-06 20:14:24,917 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-57
+2026-10-06 20:14:24,917 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-57
+2026-10-06 20:14:24,922 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-74
+2026-10-06 20:14:24,922 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-74
+2026-10-06 20:14:24,925 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-102
+2026-10-06 20:14:24,925 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-102
+2026-10-06 20:14:24,929 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-36
+2026-10-06 20:14:24,929 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-36
+2026-10-06 20:14:24,936 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-145
+2026-10-06 20:14:24,936 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-145
+2026-10-06 20:14:24,941 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-68
+2026-10-06 20:14:24,941 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-68
+2026-10-06 20:14:24,956 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-16
+2026-10-06 20:14:24,956 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-16
+2026-10-06 20:14:24,964 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-30
+2026-10-06 20:14:24,964 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-30
+2026-10-06 20:14:24,971 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-15
+2026-10-06 20:14:24,971 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-15
+2026-10-06 20:14:24,977 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-45
+2026-10-06 20:14:24,978 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-45
+2026-10-06 20:14:24,982 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-53
+2026-10-06 20:14:24,982 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-53
+2026-10-06 20:14:24,989 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-71
+2026-10-06 20:14:24,989 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-105
+2026-10-06 20:14:24,989 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-71
+2026-10-06 20:14:24,989 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-105
+2026-10-06 20:14:24,997 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-39
+2026-10-06 20:14:24,997 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-39
+2026-10-06 20:14:25,394 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-177
+2026-10-06 20:14:25,394 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-177
+2026-10-06 20:14:25,402 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-188
+2026-10-06 20:14:25,402 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-188
+2026-10-06 20:14:25,408 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-55
+2026-10-06 20:14:25,408 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-55
+2026-10-06 20:14:25,415 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-135
+2026-10-06 20:14:25,415 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-135
+2026-10-06 20:14:25,419 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-181
+2026-10-06 20:14:25,419 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-181
+2026-10-06 20:14:25,424 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-182
+2026-10-06 20:14:25,424 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-182
+2026-10-06 20:14:25,426 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-22
+2026-10-06 20:14:25,426 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-22
+2026-10-06 20:14:25,434 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-179
+2026-10-06 20:14:25,434 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-179
+2026-10-06 20:14:25,438 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-191
+2026-10-06 20:14:25,438 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-191
+2026-10-06 20:14:25,458 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-190
+2026-10-06 20:14:25,459 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-190
+2026-10-06 20:14:25,464 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-187
+2026-10-06 20:14:25,465 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-187
+2026-10-06 20:14:25,468 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-185
+2026-10-06 20:14:25,468 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-185
+2026-10-06 20:14:25,473 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-193
+2026-10-06 20:14:25,473 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-193
+2026-10-06 20:14:25,479 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-184
+2026-10-06 20:14:25,479 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-184
+2026-10-06 20:14:25,484 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-194
+2026-10-06 20:14:25,484 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-194
+2026-10-06 20:14:25,492 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-186
+2026-10-06 20:14:25,493 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-186
+2026-10-06 20:14:25,499 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-189
+2026-10-06 20:14:25,499 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-189
+2026-10-06 20:14:25,504 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-180
+2026-10-06 20:14:25,504 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-180
+2026-10-06 20:14:25,511 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-183
+2026-10-06 20:14:25,511 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-183
+2026-10-06 20:14:25,518 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-192
+2026-10-06 20:14:25,518 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-192
+2026-10-06 20:14:25,523 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-195
+2026-10-06 20:14:25,523 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-195
+2026-10-06 20:14:25,528 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-77
+2026-10-06 20:14:25,528 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-77
+2026-10-06 20:14:25,537 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-137
+2026-10-06 20:14:25,537 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-137
+2026-10-06 20:14:25,545 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-139
+2026-10-06 20:14:25,545 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-139
+2026-10-06 20:14:25,554 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-6
+2026-10-06 20:14:25,554 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-6
+2026-10-06 20:14:25,563 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-81
+2026-10-06 20:14:25,563 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-81
+2026-10-06 20:14:25,566 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-125
+2026-10-06 20:14:25,566 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-125
+2026-10-06 20:14:25,594 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-63
+2026-10-06 20:14:25,595 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-63
+2026-10-06 20:14:25,599 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-197
+2026-10-06 20:14:25,599 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-197
+2026-10-06 20:14:25,609 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-17
+2026-10-06 20:14:25,609 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-198
+2026-10-06 20:14:25,609 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-17
+2026-10-06 20:14:25,609 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-198
+2026-10-06 20:14:25,617 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-200
+2026-10-06 20:14:25,617 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-200
+2026-10-06 20:14:25,630 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-42
+2026-10-06 20:14:25,630 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-42
+2026-10-06 20:14:25,635 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-113
+2026-10-06 20:14:25,636 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-113
+2026-10-06 20:14:25,639 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-21
+2026-10-06 20:14:25,640 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-21
+2026-10-06 20:14:25,641 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-23
+2026-10-06 20:14:25,641 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-23
+2026-10-06 20:14:25,645 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-94
+2026-10-06 20:14:25,645 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-94
+2026-10-06 20:14:25,648 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-199
+2026-10-06 20:14:25,648 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-199
+2026-10-06 20:14:25,661 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-75
+2026-10-06 20:14:25,661 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-75
+2026-10-06 20:14:25,661 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-109
+2026-10-06 20:14:25,661 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-109
+2026-10-06 20:14:25,664 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-18
+2026-10-06 20:14:25,664 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-18
+2026-10-06 20:14:25,669 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-96
+2026-10-06 20:14:25,669 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-96
+2026-10-06 20:14:25,671 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-103
+2026-10-06 20:14:25,672 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-103
+2026-10-06 20:14:25,673 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-69
+2026-10-06 20:14:25,673 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-69
+2026-10-06 20:14:25,678 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-87
+2026-10-06 20:14:25,678 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-87
+2026-10-06 20:14:25,682 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-101
+2026-10-06 20:14:25,682 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-101
+2026-10-06 20:14:25,683 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-112
+2026-10-06 20:14:25,684 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-112
+2026-10-06 20:14:25,686 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-46
+2026-10-06 20:14:25,686 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-46
+2026-10-06 20:14:25,690 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-142
+2026-10-06 20:14:25,690 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-142
+2026-10-06 20:14:25,711 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-44
+2026-10-06 20:14:25,711 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-44
+2026-10-06 20:14:25,713 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-148
+2026-10-06 20:14:25,713 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-148
+2026-10-06 20:14:25,719 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-146
+2026-10-06 20:14:25,719 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-146
+2026-10-06 20:14:25,720 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-114
+2026-10-06 20:14:25,720 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-114
+2026-10-06 20:14:25,724 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-13
+2026-10-06 20:14:25,724 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-13
+2026-10-06 20:14:25,725 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-107
+2026-10-06 20:14:25,725 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-107
+2026-10-06 20:14:25,726 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-37
+2026-10-06 20:14:25,726 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-37
+2026-10-06 20:14:25,734 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-99
+2026-10-06 20:14:25,734 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-99
+2026-10-06 20:14:25,742 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-110
+2026-10-06 20:14:25,742 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-110
+2026-10-06 20:14:25,744 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-141
+2026-10-06 20:14:25,744 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-141
+2026-10-06 20:14:25,749 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-38
+2026-10-06 20:14:25,749 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-38
+2026-10-06 20:14:25,752 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-104
+2026-10-06 20:14:25,752 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-104
+2026-10-06 20:14:25,754 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-115
+2026-10-06 20:14:25,754 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-115
+2026-10-06 20:14:25,760 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-130
+2026-10-06 20:14:25,760 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-130
+2026-10-06 20:14:25,765 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-12
+2026-10-06 20:14:25,765 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-12
+2026-10-06 20:14:25,777 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-33
+2026-10-06 20:14:25,778 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-33
+2026-10-06 20:14:25,786 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-54
+2026-10-06 20:14:25,786 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-54
+2026-10-06 20:14:25,794 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-88
+2026-10-06 20:14:25,794 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-88
+2026-10-06 20:14:25,799 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-128
+2026-10-06 20:14:25,799 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-128
+2026-10-06 20:14:25,805 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-93
+2026-10-06 20:14:25,805 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-93
+2026-10-06 20:14:25,809 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-97
+2026-10-06 20:14:25,809 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-97
+2026-10-06 20:14:25,810 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-120
+2026-10-06 20:14:25,810 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-120
+2026-10-06 20:14:25,812 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-127
+2026-10-06 20:14:25,813 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-127
+2026-10-06 20:14:25,816 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-136
+2026-10-06 20:14:25,816 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-136
+2026-10-06 20:14:25,826 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-92
+2026-10-06 20:14:25,826 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-92
+2026-10-06 20:14:25,830 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-3
+2026-10-06 20:14:25,830 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-3
+2026-10-06 20:14:25,833 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-29
+2026-10-06 20:14:25,833 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-29
+2026-10-06 20:14:25,839 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-89
+2026-10-06 20:14:25,839 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-89
+2026-10-06 20:14:25,844 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-49
+2026-10-06 20:14:25,844 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-49
+2026-10-06 20:14:25,848 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-26
+2026-10-06 20:14:25,848 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-26
+2026-10-06 20:14:25,853 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-40
+2026-10-06 20:14:25,853 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-40
+2026-10-06 20:14:25,857 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-73
+2026-10-06 20:14:25,857 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-73
+2026-10-06 20:14:25,860 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-5
+2026-10-06 20:14:25,860 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-5
+2026-10-06 20:14:25,866 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-79
+2026-10-06 20:14:25,866 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-79
+2026-10-06 20:14:25,869 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-14
+2026-10-06 20:14:25,869 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-14
+2026-10-06 20:14:25,875 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-66
+2026-10-06 20:14:25,875 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-66
+2026-10-06 20:14:25,881 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-152
+2026-10-06 20:14:25,881 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-152
+2026-10-06 20:14:25,886 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-31
+2026-10-06 20:14:25,886 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-31
+2026-10-06 20:14:25,890 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-9
+2026-10-06 20:14:25,890 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-9
+2026-10-06 20:14:25,896 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-150
+2026-10-06 20:14:25,896 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-150
+2026-10-06 20:14:25,898 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-47
+2026-10-06 20:14:25,898 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-47
+2026-10-06 20:14:25,903 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-154
+2026-10-06 20:14:25,903 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-154
+2026-10-06 20:14:25,908 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-158
+2026-10-06 20:14:25,908 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-158
+2026-10-06 20:14:25,912 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-70
+2026-10-06 20:14:25,913 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-70
+2026-10-06 20:14:25,916 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-56
+2026-10-06 20:14:25,916 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-56
+2026-10-06 20:14:25,922 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-153
+2026-10-06 20:14:25,922 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-153
+2026-10-06 20:14:25,927 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-156
+2026-10-06 20:14:25,927 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-156
+2026-10-06 20:14:25,931 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-170
+2026-10-06 20:14:25,932 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-170
+2026-10-06 20:14:25,935 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-159
+2026-10-06 20:14:25,935 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-159
+2026-10-06 20:14:25,940 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-157
+2026-10-06 20:14:25,940 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-157
+2026-10-06 20:14:25,944 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-162
+2026-10-06 20:14:25,944 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-162
+2026-10-06 20:14:25,947 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-161
+2026-10-06 20:14:25,947 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-161
+2026-10-06 20:14:25,952 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-163
+2026-10-06 20:14:25,952 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-163
+2026-10-06 20:14:25,955 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-160
+2026-10-06 20:14:25,955 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-160
+2026-10-06 20:14:25,961 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-155
+2026-10-06 20:14:25,961 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-155
+2026-10-06 20:14:25,965 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-166
+2026-10-06 20:14:25,965 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-166
+2026-10-06 20:14:25,970 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-173
+2026-10-06 20:14:25,970 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-173
+2026-10-06 20:14:25,972 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-164
+2026-10-06 20:14:25,973 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-164
+2026-10-06 20:14:25,977 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-169
+2026-10-06 20:14:25,977 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-169
+2026-10-06 20:14:25,981 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-165
+2026-10-06 20:14:25,982 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-165
+2026-10-06 20:14:25,987 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-174
+2026-10-06 20:14:25,988 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-174
+2026-10-06 20:14:25,993 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-168
+2026-10-06 20:14:25,993 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-168
+2026-10-06 20:14:25,998 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-61
+2026-10-06 20:14:25,998 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-61
+2026-10-06 20:14:26,142 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-167
+2026-10-06 20:14:26,142 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-167
+2026-10-06 20:14:26,306 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-60
+2026-10-06 20:14:26,306 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-60
+2026-10-06 20:14:26,394 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-175
+2026-10-06 20:14:26,394 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-175
+2026-10-06 20:14:26,524 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-178
+2026-10-06 20:14:26,524 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-178
+2026-10-06 20:14:26,535 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-10
+2026-10-06 20:14:26,535 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-10
+2026-10-06 20:14:26,544 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-86
+2026-10-06 20:14:26,544 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-86
+2026-10-06 20:14:26,546 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-176
+2026-10-06 20:14:26,546 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-176
+2026-10-06 20:14:26,548 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-51
+2026-10-06 20:14:26,548 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-51
+2026-10-06 20:14:26,557 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-72
+2026-10-06 20:14:26,557 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-72
+2026-10-06 20:14:26,557 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-196
+2026-10-06 20:14:26,557 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-196
+2026-10-06 20:14:26,559 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-140
+2026-10-06 20:14:26,559 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-140
+2026-10-06 20:14:26,568 INFO o.a.j.t.JMeterThread: Thread is done: 1-评论压测(200并发/超100QPS) 1-118
+2026-10-06 20:14:26,569 INFO o.a.j.t.JMeterThread: Thread finished: 1-评论压测(200并发/超100QPS) 1-118
+2026-10-06 20:14:27,973 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-16
+2026-10-06 20:14:27,973 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-16
+2026-10-06 20:14:27,975 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-2
+2026-10-06 20:14:27,975 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-2
+2026-10-06 20:14:27,976 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-8
+2026-10-06 20:14:27,976 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-8
+2026-10-06 20:14:27,976 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-7
+2026-10-06 20:14:27,976 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-7
+2026-10-06 20:14:27,976 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-9
+2026-10-06 20:14:27,976 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-9
+2026-10-06 20:14:27,981 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-18
+2026-10-06 20:14:27,981 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-18
+2026-10-06 20:14:28,022 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-4
+2026-10-06 20:14:28,022 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-4
+2026-10-06 20:14:28,025 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-6
+2026-10-06 20:14:28,025 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-6
+2026-10-06 20:14:28,025 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-10
+2026-10-06 20:14:28,025 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-13
+2026-10-06 20:14:28,025 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-17
+2026-10-06 20:14:28,025 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-10
+2026-10-06 20:14:28,025 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-13
+2026-10-06 20:14:28,026 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-17
+2026-10-06 20:14:28,027 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-1
+2026-10-06 20:14:28,027 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-1
+2026-10-06 20:14:28,029 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-11
+2026-10-06 20:14:28,029 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-11
+2026-10-06 20:14:28,033 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-5
+2026-10-06 20:14:28,034 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-5
+2026-10-06 20:14:28,041 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-15
+2026-10-06 20:14:28,041 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-15
+2026-10-06 20:14:28,041 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-14
+2026-10-06 20:14:28,041 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-14
+2026-10-06 20:14:28,041 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-19
+2026-10-06 20:14:28,042 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-19
+2026-10-06 20:14:28,042 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-12
+2026-10-06 20:14:28,042 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-12
+2026-10-06 20:14:28,043 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-3
+2026-10-06 20:14:28,043 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-3
+2026-10-06 20:14:28,075 INFO o.a.j.t.JMeterThread: Thread is done: 2-搜索压测(限速300/s,低于500) 2-20
+2026-10-06 20:14:28,075 INFO o.a.j.t.JMeterThread: Thread finished: 2-搜索压测(限速300/s,低于500) 2-20
+2026-10-06 20:14:28,075 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2026-10-06 20:14:28,082 INFO o.a.j.r.Summariser: summary =   4600 in 00:00:05 =  972.9/s Avg:    78 Min:     1 Max:  1742 Err:  3600 (78.26%)
+2026-10-06 20:14:28,082 INFO o.a.j.JMeter: Generating Dashboard
+2026-10-06 20:14:28,082 INFO o.a.j.r.d.ReportGenerator: Flushing result collector before report Generation
+2026-10-06 20:14:28,102 INFO o.a.j.r.p.NormalizerSampleConsumer: Using format, 'ms', to parse timeStamp field
+2026-10-06 20:14:28,296 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.AggregateConsumer#stopProducing(): beginDate produced 0 samples
+2026-10-06 20:14:28,296 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.AggregateConsumer#stopProducing(): endDate produced 0 samples
+2026-10-06 20:14:28,298 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.ApdexSummaryConsumer#stopProducing(): apdexSummary produced 0 samples
+2026-10-06 20:14:28,298 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.RequestsSummaryConsumer#stopProducing(): requestsSummary produced 0 samples
+2026-10-06 20:14:28,302 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.StatisticsSummaryConsumer#stopProducing(): statisticsSummary produced 0 samples
+2026-10-06 20:14:28,303 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.Top5ErrorsBySamplerConsumer#stopProducing(): top5ErrorsBySampler produced 0 samples
+2026-10-06 20:14:28,303 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.ErrorsSummaryConsumer#stopProducing(): errorsSummary produced 0 samples
+2026-10-06 20:14:28,303 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.HitsPerSecondGraphConsumer#stopProducing(): hitsPerSecond produced 0 samples
+2026-10-06 20:14:28,363 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.LatencyVSRequestGraphConsumer#stopProducing(): latencyVsRequest produced 0 samples
+2026-10-06 20:14:28,363 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.SyntheticResponseTimeDistributionGraphConsumer#stopProducing(): syntheticResponseTimeDistribution produced 0 samples
+2026-10-06 20:14:28,363 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.BytesThroughputGraphConsumer#stopProducing(): bytesThroughputOverTime produced 0 samples
+2026-10-06 20:14:28,364 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.CodesPerSecondGraphConsumer#stopProducing(): codesPerSecond produced 0 samples
+2026-10-06 20:14:28,401 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeVSRequestGraphConsumer#stopProducing(): responseTimeVsRequest produced 0 samples
+2026-10-06 20:14:28,402 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): startIntervalControlerFilter produced 32200 samples
+2026-10-06 20:14:28,402 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TotalTPSGraphConsumer#stopProducing(): totalTPS produced 0 samples
+2026-10-06 20:14:28,402 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ActiveThreadsGraphConsumer#stopProducing(): activeThreadsOverTime produced 0 samples
+2026-10-06 20:14:28,402 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TimeVSThreadGraphConsumer#stopProducing(): timeVsThreads produced 0 samples
+2026-10-06 20:14:28,402 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeDistributionGraphConsumer#stopProducing(): responseTimeDistribution produced 0 samples
+2026-10-06 20:14:28,402 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.TransactionsPerSecondGraphConsumer#stopProducing(): transactionsPerSecond produced 0 samples
+2026-10-06 20:14:28,402 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimePercentilesGraphConsumer#stopProducing(): responseTimePercentiles produced 0 samples
+2026-10-06 20:14:28,403 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimePercentilesOverTimeGraphConsumer#stopProducing(): responseTimePercentilesOverTime produced 0 samples
+2026-10-06 20:14:28,404 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ResponseTimeOverTimeGraphConsumer#stopProducing(): responseTimesOverTime produced 0 samples
+2026-10-06 20:14:28,404 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.ConnectTimeOverTimeGraphConsumer#stopProducing(): connectTimeOverTime produced 0 samples
+2026-10-06 20:14:28,404 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.graph.impl.LatencyOverTimeGraphConsumer#stopProducing(): latenciesOverTime produced 0 samples
+2026-10-06 20:14:28,404 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): nameFilter produced 69000 samples
+2026-10-06 20:14:28,404 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.FilterConsumer#stopProducing(): dateRangeFilter produced 13800 samples
+2026-10-06 20:14:28,404 INFO o.a.j.r.p.AbstractSampleConsumer: class org.apache.jmeter.report.processor.NormalizerSampleConsumer#stopProducing(): normalizer produced 4600 samples
+2026-10-06 20:14:28,404 INFO o.a.j.r.p.CsvFileSampleSource: produce(): 4600 samples produced in 278ms on channel 0
+2026-10-06 20:14:28,404 INFO o.a.j.r.d.ReportGenerator: Exporting data using exporter:'json' of className:'org.apache.jmeter.report.dashboard.JsonExporter'
+2026-10-06 20:14:28,469 INFO o.a.j.r.d.JsonExporter: Found data for consumer statisticsSummary in context
+2026-10-06 20:14:28,469 INFO o.a.j.r.d.JsonExporter: Creating statistics for overall
+2026-10-06 20:14:28,469 INFO o.a.j.r.d.JsonExporter: Creating statistics for other transactions
+2026-10-06 20:14:28,469 INFO o.a.j.r.d.JsonExporter: Checking output folder
+2026-10-06 20:14:28,470 INFO o.a.j.r.d.JsonExporter: Writing statistics JSON to D:\software\xhs课程\xhs-project-batch34\day8\ratelimit\report-comments\statistics.json
+2026-10-06 20:14:28,501 INFO o.a.j.r.d.ReportGenerator: Exporting data using exporter:'html' of className:'org.apache.jmeter.report.dashboard.HtmlTemplateExporter'
+2026-10-06 20:14:28,504 INFO o.a.j.r.d.HtmlTemplateExporter: Will generate dashboard in folder: D:\software\xhs课程\xhs-project-batch34\day8\ratelimit\report-comments
+2026-10-06 20:14:28,578 INFO o.a.j.r.d.HtmlTemplateExporter: Report will be generated in: D:\software\xhs课程\xhs-project-batch34\day8\ratelimit\report-comments, creating folder structure
+2026-10-06 20:14:28,581 INFO o.a.j.r.d.TemplateVisitor: Copying folder from 'D:\SM\apache-jmeter-5.6.3\apache-jmeter-5.6.3\bin\report-template' to 'D:\software\xhs课程\xhs-project-batch34\day8\ratelimit\report-comments', got message: D:\software\xhs课程\xhs-project-batch34\day8\ratelimit\report-comments, found non empty folder with following content [D:\software\xhs课程\xhs-project-batch34\day8\ratelimit\report-comments\statistics.json], will be ignored
+2026-10-06 20:14:28,879 INFO o.a.j.JMeter: Dashboard generated
