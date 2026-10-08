@@ -1,6 +1,6 @@
 # qiongyou-backend 生产化 TODO 清单
 
-> 目标：把 Day2–Day8 的实训成果补齐成一个"能上生产、面试讲得出来"的项目。
+> 目标：把实训成果补齐成一个"能上生产、面试讲得出来"的项目。
 > 图例：**P0** 阻断/红线 ｜ **P1** 手册留白的生产项 ｜ **P2** 工程化 ｜ **P3** 性能安全细节
 > 规模估算：S ≤ 半天 ｜ M ≈ 1 天 ｜ L ≥ 2 天
 > 每个任务的改动设计 / 踩坑点 / 验证记录见 [CHANGELOG.md](CHANGELOG.md)
@@ -11,7 +11,7 @@
 
 - [x] **P0-1 修复 `init.sql` 与线上库结构漂移** ｜ S ｜ ✅ 2026-10-06
   - `t_note_share` 表存在于当前库（手动建过），但没写进 `sql/init.sql`；换机器 `docker compose up` 会缺表，分享落库直接报错。
-  - 同一脚本还缺 `t_comment (note_id, id)` 联合索引（Day2 选做挑战文档建议，深分页/排序稳定性需要）。
+  - 同一脚本还缺 `t_comment (note_id, id)` 联合索引（选做挑战文档建议，深分页/排序稳定性需要）。
   - 动手：把线上库 `SHOW CREATE TABLE` 的结果回填进 `init.sql`，并补 `ALTER TABLE t_comment ADD INDEX idx_note_id (note_id, id)`。
   - 验收：全新环境从 `init.sql` 建库后，分享一次能看到 `t_note_share` 落库。
   - **完成记录（2026-10-06）**
@@ -53,7 +53,7 @@
 ## P1 — 手册留白的生产项
 
 ### 缓存一致性
-- [x] **P1-1 补 Day2 课堂实战：评论列表缓存** ｜ S ｜ ✅ 2026-10-06
+- [x] **P1-1 补课堂实战：评论列表缓存** ｜ S ｜ ✅ 2026-10-06
   - `RedisKeys.commentList(noteId)` 已定义但**全项目零引用**；`CommentService.listByNote` 直查库。
   - 方案：**游标分页（新→旧）+ 只缓存首页**（`comment:list:{noteId}:1`，TTL 5 分钟，空列表 1 分钟）
   - 动手点：`common/RedisKeys`、`mapper/CommentMapper`、`service/CommentService`、`controller/CommentController`；前端 `api/index.js`、`views/NoteDetail.vue`
@@ -75,11 +75,11 @@
   - 验收：预热两个 key → 关注 → 两个 key 都被删；`fansCount`/`followCount` 立即更新
   - 详情见 [CHANGELOG.md](CHANGELOG.md#p1-3-关注取关后失效-userid-缓存2026-10-07)
 
-- [ ] **P1-4 补 Day4 挑战：关注走 Redis Lua 幂等** ｜ M
+- [ ] **P1-4 补挑战：关注走 Redis Lua 幂等** ｜ M
   - `RedisKeys.follow()` / `fansCount()` 已定义但未使用；`InteractService.follow` 仍是 MySQL `selectCount` + `insert`。
   - 现状可接受（关注是低频操作），但补上后"互动全链路 Redis 化"的故事才完整。
 
-### MQ 可靠性（Day6 三层防丢只做了两层）
+### MQ 可靠性（三层防丢只做了两层）
 - [x] **P1-5 开启 publisher confirm + returns** ｜ S ｜ ✅ 2026-10-07
   - `application.yml` 现只有 host/port：加 `publisher-confirm-type: correlated` + `publisher-returns: true` + `template.mandatory: true`，并写 `ConfirmCallback`/`ReturnsCallback` 记日志。
   - 动手点：`application.yml`、新增 `config/RabbitConfirmConfig`、发送侧补 `CorrelationData`
@@ -109,7 +109,7 @@
 - [ ] **P1-8 手动 ACK + 失败重试策略** ｜ M
   - 现在用默认 AUTO；精细控制需 `acknowledge-mode: manual` + `basicAck/basicNack`。
 
-### Feed / 热榜（Day7 只做了推模式基线）
+### Feed / 热榜（只做了推模式基线）
 - [x] **P1-9 大 V 推拉结合** ｜ L ｜ ✅ 2026-10-07
   - `FeedService.pushNote` 无条件全量推给所有粉丝，千万粉大 V 会写爆。加粉丝数阈值，超阈值走拉模式，读时归并。
   - 方案：**作者发件箱 ZSet + 大V只写自己、粉丝读时拉取归并**
@@ -133,9 +133,9 @@
   - 已知局限：老内容衰减到 ~0 后，实时 `addHeat` 的跳变被放大（≤10 分钟内被重算拉回）
   - 详情见 [CHANGELOG.md](CHANGELOG.md#p1-11--p1-12-热度时间衰减--热榜定时重算2026-10-07)
 
-### 限流 / 搜索（Day8 粗粒度）
+### 限流 / 搜索（粗粒度）
 - [x] **P1-13 限流按用户维度** ｜ S ｜ ✅ 2026-10-07
-  - `RateLimitInterceptor` 是全局窗口，防不住羊毛党。Key 改 `rate:limit:{user}:{接口}:{秒}`（Day8 选做挑战）。
+  - `RateLimitInterceptor` 是全局窗口，防不住羊毛党。Key 改 `rate:limit:{user}:{接口}:{秒}`（选做挑战）。
   - 方案：**auth 拦截器提到限流之前**（否则拿不到 userId）+ Key 拼 `u{userId}`/`ip{IP}` + 阈值改单用户量级且 yml 可配
   - 动手点：`application.yml`、`config/WebConfig`（顺序）、`ratelimit/RateLimitInterceptor`
   - 验收：user1 并发 10 次搜索（阈值 3）= 3×200 + 7×429；user2 独立计桶全 200
@@ -224,7 +224,7 @@
 
 - [x] **N-1 写一份项目 README** ｜ M ｜ ✅ 2026-10-07 — 见 [README.md](README.md)：技术栈、架构图、技术演进线、关键设计决策（面试可讲点）、快速开始、已知限制
 - [x] **N-2 整理压测数据** ｜ S ｜ ✅ 2026-10-07（已完成**优化前后对照实测**）— 见 [docs/PERF.md](docs/PERF.md)
-  - 方法：`git worktree` 取基线 `593bffa`（Day1 全直查 MySQL）与当前 HEAD，两边都指向**独立压测库 `xhs_bench`**（3000 笔记/15 万点赞），同一个 JMeter 计划 `docs/bench/bench.jmx` 各压 1000 请求（零错误）
+  - 方法：`git worktree` 取基线 `60bb248`（早期全直查 MySQL）与当前 HEAD，两边都指向**独立压测库 `xhs_bench`**（3000 笔记/15 万点赞），同一个 JMeter 计划 `docs/bench/bench.jmx` 各压 1000 请求（零错误）
   - **结果（真实，且出乎意料）**：`detail` 6.5→9.9ms、`list` 6.8→43.4ms、`hot` 9.5→44.7ms、`search` 6.9→134.1ms、`like` 3.6→5.3ms —— **优化后读接口更慢**
   - **根因已定位**：读路径 **N+1 Redis 往返**（每篇笔记 2 次 `SISMEMBER` + 3 次 `GET`；10 篇列表 = 50 次往返）。证据：`detail`(1 篇) 只慢 3.4ms，`list`(10 篇) 慢 36.6ms → ≈3.7ms/篇，与「每篇 5 次往返」吻合
   - 🚫 **不要在简历上写"QPS 提升 N 倍"**——当前实测是优化后更慢。这份数据的价值是**实测出 P3-1（消除 N+1）确是当前第一优先级**

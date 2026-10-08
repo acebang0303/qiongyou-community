@@ -78,7 +78,7 @@ public class UserService {
     }
 
     /**
-     * ★ Day5 改造：用户主页缓存 → 未命中走分布式锁互斥重建
+     * ★ 用户主页缓存 → 未命中走分布式锁互斥重建
      */
     public UserVO userInfo(Long userId, Long viewerId) {
         String key = RedisKeys.user(userId);

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Day8：ES 索引消费者
+ * ES 索引消费者
  * 消费 note.es.queue：收到笔记事件 → 查库取最新内容 → 写入 ES
  * ES 本身按文档ID覆盖写（PUT _doc/{id}），天然幂等
  */

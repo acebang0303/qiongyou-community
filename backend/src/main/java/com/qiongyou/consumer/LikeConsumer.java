@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Day6：点赞落库消费者
+ * 点赞落库消费者
  * 按消费者的处理能力匀速写 MySQL —— 这就是"削峰填谷"
  * ★ P0-4：加事务，保证「插/删明细 + 改计数」原子；抛异常则消息重新入队
  */

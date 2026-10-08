@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Day8 版本（在 Day7 基础上）：
+ * 
  * - 搜索：优先走 Elasticsearch，ES 异常或无结果时回退 MySQL LIKE（降级）
  * - 发布笔记：发送 NoteEvent 到 MQ，由 EsConsumer 异步写入 ES 索引
  * - 其余逻辑（缓存/分布式锁/Feed/热榜）保持不变
@@ -80,7 +80,7 @@ public class NoteService {
         return list;
     }
 
-    /** 关注页：ZSet Feed 收件箱（Day7 逻辑，Redis 异常时降级走 MySQL） */
+    /** 关注页：ZSet Feed 收件箱（Redis 异常时降级走 MySQL） */
     public List<NoteVO> followFeed(Long userId, int page, int size, Long viewerId) {
         List<NoteVO> list;
         try {
@@ -99,7 +99,7 @@ public class NoteService {
         return list;
     }
 
-    /** 热门榜：ZSet 热度榜（Day7 逻辑，保持不变） */
+    /** 热门榜：ZSet 热度榜（保持不变） */
     public List<NoteVO> hot(Long viewerId) {
         List<NoteVO> list;
         if (hotService.isEmpty()) {
@@ -113,7 +113,7 @@ public class NoteService {
     }
 
     /**
-     * ★ Day8 改造：搜索优先走 ES
+     * ★ 搜索优先走 ES
      * ★ P1-16：改游标分页（search_after），返回 {list, nextCursor}
      * ES 抛异常（服务不可用）→ 降级回退 MySQL LIKE（单页，无游标）
      */
@@ -137,7 +137,7 @@ public class NoteService {
         return new SearchPageVO(list, nextCursor);
     }
 
-    /** 缓存 → 未命中走分布式锁互斥重建（Day5 逻辑，保持不变） */
+    /** 缓存 → 未命中走分布式锁互斥重建（保持不变） */
     public NoteVO detail(Long id, Long viewerId) {
         NoteVO vo = getFromCache(id);
         if (vo == null) {
@@ -157,7 +157,7 @@ public class NoteService {
     }
 
     /**
-     * 分布式锁互斥重建（Day5 逻辑）
+     * 分布式锁互斥重建
      * ★ P3-2：锁值改为唯一 token，释放走 Lua 比对归属（避免误删别人的锁）
      * ★ P3-5：没抢到锁改为短暂轮询等别人重建，而不是睡一次就直接回源查库
      */
@@ -214,8 +214,8 @@ public class NoteService {
     }
 
     /**
-     * ★ Day8 改造：发布笔记后发送 NoteEvent，异步写入 ES 索引
-     * （Day7 的 Feed 推送逻辑保留）
+     * ★ 发布笔记后发送 NoteEvent，异步写入 ES 索引
+     * （Feed 推送逻辑保留）
      * ★ P0-4：加事务；Feed 推送(Redis) 与 MQ 发送移到提交后，避免回滚留下幽灵数据/消息
      */
     @Transactional
@@ -240,7 +240,7 @@ public class NoteService {
     }
 
     /**
-     * 点赞/收藏状态从 Redis 判断（Day3 改造）
+     * 点赞/收藏状态从 Redis 判断
      * ★ P3-1：改用 pipeline 批量取，把「每篇 2 次 SISMEMBER」的 N+1 往返压成 1 次往返
      */
     @SuppressWarnings("unchecked")
@@ -294,7 +294,7 @@ public class NoteService {
     }
 
     /**
-     * 点赞数/收藏数/分享数优先取 Redis（Day3 改造；★ P1-2 补 shareCount）
+     * 点赞数/收藏数/分享数优先取 Redis（★ P1-2 补 shareCount）
      * ★ P3-1：改用 MGET 一次取回，把「每篇 3 次 GET」的 N+1 往返压成 1 次往返
      */
     private void mergeCounts(List<NoteVO> list) {

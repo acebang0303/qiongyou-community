@@ -7,7 +7,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 /**
- * Day6：评论通知消费者
+ * 评论通知消费者
  * 真实系统中这里会写通知表/推站内信/推送，实训版打印日志模拟
  */
 @Slf4j

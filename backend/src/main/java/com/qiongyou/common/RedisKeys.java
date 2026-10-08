@@ -1,7 +1,7 @@
 package com.qiongyou.common;
 
 /**
- * Day2 引入：统一管理所有 Redis Key，避免硬编码散落各处
+ * 统一管理所有 Redis Key，避免硬编码散落各处
  */
 public final class RedisKeys {
 
@@ -18,37 +18,37 @@ public final class RedisKeys {
         return "comment:list:" + noteId + ":" + page;
     }
 
-    /** 笔记缓存重建锁（Day5）：note:lock:1 */
+    /** 笔记缓存重建锁：note:lock:1 */
     public static String noteLock(Long noteId) {
         return "note:lock:" + noteId;
     }
 
-    /** 用户主页缓存（Day5）：user:1 */
+    /** 用户主页缓存：user:1 */
     public static String user(Long userId) {
         return "user:" + userId;
     }
 
-    /** 用户主页缓存重建锁（Day5）：user:lock:1 */
+    /** 用户主页缓存重建锁：user:lock:1 */
     public static String userLock(Long userId) {
         return "user:lock:" + userId;
     }
 
-    /** 点赞关系 Set（Day3）：like:1 */
+    /** 点赞关系 Set：like:1 */
     public static String like(Long noteId) {
         return "like:" + noteId;
     }
 
-    /** 点赞计数（Day3）：like:count:1 */
+    /** 点赞计数：like:count:1 */
     public static String likeCount(Long noteId) {
         return "like:count:" + noteId;
     }
 
-    /** 收藏关系 Set（Day3）：favorite:1 */
+    /** 收藏关系 Set：favorite:1 */
     public static String favorite(Long noteId) {
         return "favorite:" + noteId;
     }
 
-    /** 收藏计数（Day3）：favorite:count:1 */
+    /** 收藏计数：favorite:count:1 */
     public static String favoriteCount(Long noteId) {
         return "favorite:count:" + noteId;
     }
@@ -63,17 +63,17 @@ public final class RedisKeys {
         return "share:count:" + noteId;
     }
 
-    /** 关注关系 Set（Day6）：follow:5 表示 5 号用户关注了哪些人 */
+    /** 关注关系 Set：follow:5 表示 5 号用户关注了哪些人 */
     public static String follow(Long userId) {
         return "follow:" + userId;
     }
 
-    /** 粉丝数计数（Day6）：fans:count:5 表示 5 号用户的粉丝数 */
+    /** 粉丝数计数：fans:count:5 表示 5 号用户的粉丝数 */
     public static String fansCount(Long userId) {
         return "fans:count:" + userId;
     }
 
-    /** 关注页收件箱 ZSet（Day7）：feed:5 */
+    /** 关注页收件箱 ZSet：feed:5 */
     public static String feed(Long userId) {
         return "feed:" + userId;
     }
@@ -83,7 +83,7 @@ public final class RedisKeys {
         return "feed:outbox:" + authorId;
     }
 
-    /** 热点榜单 ZSet（Day7） */
+    /** 热点榜单 ZSet */
     public static final String HOT_NOTES = "hot:notes";
 
     /** 热门话题榜 ZSet：hot:tags */
@@ -91,7 +91,7 @@ public final class RedisKeys {
         return "hot:tags";
     }
 
-    /** 限流计数（Day8）：rate:limit:/api/notes/1/like */
+    /** 限流计数：rate:limit:/api/notes/1/like */
     public static String rateLimit(String resource) {
         return "rate:limit:" + resource;
     }

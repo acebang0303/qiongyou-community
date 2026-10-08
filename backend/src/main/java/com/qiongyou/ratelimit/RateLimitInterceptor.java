@@ -14,13 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Day8：Redis 固定窗口限流拦截器
+ * Redis 固定窗口限流拦截器
  * ★ P1-13：改为**按用户维度**限流（匿名按 IP），阈值全部 yml 可配
  *
  * 原理：每秒一个计数 Key（INCR），超过阈值直接拒绝
  *   Key：rate:limit:{u:用户ID | ip:来源IP}:{分类}:{秒}
  *   点赞类接口   /api/notes/{id}/like       → 20 次/秒/用户
- *   评论接口     /api/notes/{id}/comments   → 5  次/秒/用户（Day8 选做挑战指定）
+ *   评论接口     /api/notes/{id}/comments   → 5  次/秒/用户（选做挑战指定）
  *   搜索接口     /api/notes/search          → 10 次/秒/用户
  *   其他接口                                → 50 次/秒/用户
  *

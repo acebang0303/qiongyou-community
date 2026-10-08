@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Day8：Elasticsearch 搜索服务
+ * Elasticsearch 搜索服务
  *
  * 不引入 ES 官方客户端，直接用 RestTemplate 调 ES 的 REST API（9200 端口），
  * 方便学生用 curl / Postman 对照理解每一条请求。

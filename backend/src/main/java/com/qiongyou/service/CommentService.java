@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Day7 版本（在 Day6 基础上）：评论成功后累加热度（权重最高 = 5）
+ * 评论成功后累加热度（权重最高 = 5）
  */
 @Service
 public class CommentService {
@@ -107,7 +107,7 @@ public class CommentService {
                     RabbitConfig.COMMENT_ROUTING_KEY,
                     new CommentEvent(noteId, authorId, userId, trimmed),
                     new CorrelationData("comment:" + noteId + ":" + userId));
-            // ★ Day7：评论 → 热度 +5（权重最高的互动行为）
+            // ★ 评论 → 热度 +5（权重最高的互动行为）
             hotService.addHeat(noteId, HotService.WEIGHT_COMMENT);
             // ★ P1-1：DESC 排序下新评论落在首页，必须删除首页缓存
             redisTemplate.delete(RedisKeys.commentList(noteId, 1));

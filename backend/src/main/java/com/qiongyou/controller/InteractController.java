@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 互动接口：点赞 / 收藏
  *
- * Day1 压测重点接口：POST /api/notes/{id}/like
- * （基线版同步写库，Day3 起优化）
+ * 压测重点接口：POST /api/notes/{id}/like
+ * （基线版同步写库，此后优化）
  * P0-2：登录身份统一从 UserContext 取
  */
 @RestController

@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * ★ P2-2：点赞的 Lua 原子幂等（Day4 的核心考点）
+ * ★ P2-2：点赞的 Lua 原子幂等（核心考点）
  *
  * 验证「判断 + 计数」被 Lua 合并成原子操作后：
  * 重复点赞只生效一次；100 并发点赞也只会产生 1 条关系、1 次计数。

@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Day6：点赞事件消息
+ * 点赞事件消息
  * Redis 更新成功后发送，由 LikeConsumer 异步落库
  */
 @Data

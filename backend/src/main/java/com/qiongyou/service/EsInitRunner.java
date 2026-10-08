@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 /**
- * Day8：应用启动时初始化 ES 索引
+ * 应用启动时初始化 ES 索引
  * （索引不存在才创建，已存在则跳过）
  */
 @Slf4j

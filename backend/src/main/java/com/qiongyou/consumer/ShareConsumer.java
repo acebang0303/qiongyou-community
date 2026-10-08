@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Day9：分享落库消费者
+ * 分享落库消费者
  * 用户请求在 Redis 那一步就返回了，这里按处理能力匀速写 t_note_share 并维护 share_count
  * ★ P0-4：加事务，保证「插/删明细 + 改计数」原子
  */

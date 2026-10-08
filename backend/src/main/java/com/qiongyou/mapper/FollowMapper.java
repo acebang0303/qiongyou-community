@@ -22,7 +22,7 @@ public interface FollowMapper extends BaseMapper<Follow> {
             "WHERE f.follow_user_id = #{userId} ORDER BY f.create_time DESC")
     List<SimpleUserVO> selectFans(@Param("userId") Long userId);
 
-    /** ★ Day7 新增：查询某用户的所有粉丝ID（Feed 推模式用） */
+    /** ★ 查询某用户的所有粉丝ID（Feed 推模式用） */
     @Select("SELECT user_id FROM t_follow WHERE follow_user_id = #{userId}")
     List<Long> selectFollowerIds(@Param("userId") Long userId);
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Day8 版本：热门榜接口增加降级兜底
+ * 热门榜接口增加降级兜底
  * Redis 异常时不再直接报错，而是降级返回"最新笔记"，保证首页可用
  */
 @Slf4j
@@ -45,7 +45,7 @@ public class NoteController {
     }
 
     /**
-     * ★ Day8 改造：热门榜降级
+     * ★ 热门榜降级
      * 依赖组件（Redis/DB）异常时，降级返回最新笔记列表，而不是抛 500
      */
     @GetMapping("/hot")
@@ -59,7 +59,7 @@ public class NoteController {
         }
     }
 
-    /** 关键词搜索（Day8 起服务端优先走 ES；★ P1-16 游标分页） */
+    /** 关键词搜索（服务端优先走 ES；★ P1-16 游标分页） */
     @GetMapping("/search")
     public Result<SearchPageVO> search(
             @RequestParam String keyword,

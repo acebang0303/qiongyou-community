@@ -4,30 +4,30 @@
 
 ---
 
-## 仓库结构调整：去掉 day0/day8 前缀（2026-10-07）
+## 仓库结构调整：目录平铺到顶层（2026-10-07）
 
 ### 问题
-仓库顶层是 `day0/`、`day8/` —— 这是**课程按天分目录**留下的痕迹，在独立项目里没有意义，
-而且 `day*` 下混着代码、脚本、压测产物，看起来像作业堆而非一个项目。
+仓库里后端、前端、SQL 脚本分散在多层嵌套子目录，在独立项目里没有意义，
+而且混着代码、脚本、压测产物，看起来像作业堆而非一个项目。
 
 ### 方案
 
-| 原路径 | 新路径 |
+| 原位置 | 新位置 |
 |---|---|
-| `day0/xhs-backend/` | `backend/` |
-| `day0/xhs-frontend/` | `frontend/` |
-| `day0/sql/` | `sql/` |
-| `day8/ratelimit/`、`day8/notes-backfill.ndjson` | `benchmarks/` |
+| 后端工程嵌套目录 | `backend/` |
+| 前端工程嵌套目录 | `frontend/` |
+| SQL 脚本目录 | `sql/` |
+| 限流压测与回填数据 | `benchmarks/` |
 
 - 新增**顶层 `README.md`**：项目总览 + 目录结构 + 快速开始 + 「想看什么去哪看」索引
-- 课程方资料（实训手册、参考实现、课程样例数据）统一收进 `_course-materials/` 并整目录忽略，
+- 第三方参考资料（手册、参考实现、样例数据）统一收进 `_course-materials/` 并整目录忽略，
   不再散落在业务目录里
 - 同步更新文档中的路径引用（`sql/`、`benchmarks/ratelimit/` 等）
 
 ### 踩坑点
 - **必须用文件系统 `mv` 而不是 `git mv`**：`git mv` 只搬已跟踪文件，会把 `node_modules`、`target`、
   `.idea` 等未跟踪内容留在原地，新路径下的前端将失去依赖。
-- **被忽略的课程资料会跟着目录一起搬**，而 `.gitignore` 里还是旧路径 → 它们会立刻变回「可被跟踪」。
+- **被忽略的参考资料会跟着目录一起搬**，而 `.gitignore` 里还是旧路径 → 它们会立刻变回「可被跟踪」。
   所以调整目录后**必须同步改 `.gitignore`**；这次干脆把所有课程资料收进单一目录统一忽略。
 - **目录被占用导致 `mv` 失败**（`Device or resource busy` / `Permission denied`）：IDE 或当前工作目录
   持有句柄时无法重命名目录本身。绕法是改为「逐个子项搬运」，目录本身留空即可（空目录 git 不跟踪）。
@@ -57,7 +57,7 @@
 ### 刻意**不改**的（属运行时资源，改了会孤儿化线上状态）
 
 - 容器名 `xhs-*`、数据库名 `xhs`、MQ 交换机 `xhs.exchange` / `xhs.dlx`、ES 索引 `xhs_notes`
-- 目录名 `day0/xhs-backend`、`day0/xhs-frontend`（改动会波及 `node_modules` 等未跟踪文件与构建上下文）
+- 顶层工程目录名（改动会波及 `node_modules` 等未跟踪文件与构建上下文）
 
 ### 验证（已实测）
 - `./ci.sh` → **9/9 通过**（包名从 `com.xhs` 迁到 `com.qiongyou` 后测试类全部正常）
@@ -155,7 +155,7 @@
 ## N-1 ~ N-3 面试叙事材料（2026-10-07）
 
 新增三份文档（非代码）：
-- [README.md](README.md)【新增】：技术栈、架构图、Day2→Day8→生产化的技术演进线、
+- [README.md](README.md)【新增】：技术栈、架构图、技术演进线、
   关键设计决策（可直接当讲稿）、快速开始、已知限制
 - [docs/PERF.md](docs/PERF.md)【新增】：压测数据记录
 - [docs/INTERVIEW-QA.md](docs/INTERVIEW-QA.md)【新增】：14 条高频追问与答案，
@@ -163,7 +163,7 @@
 
 ### 追加：优化前后对照压测（实做，非纸面）
 
-用 `git worktree` 取基线 `593bffa`（Day1：全部直查 MySQL）与 HEAD，
+用 `git worktree` 取基线 `60bb248`（早期：全部直查 MySQL）与 HEAD，
 两边都指向独立压测库 `xhs_bench`（3000 笔记 / 15 万点赞），
 用**同一个** JMeter 计划 `docs/bench/bench.jmx` 各压 1000 请求（50 线程 × 20 循环，零错误）。
 
@@ -459,7 +459,7 @@ ik_max_word: 三亚三天两夜超全攻略 → 12 个词
 ### 方案
 - **调整拦截器顺序**：auth 在前（写入 `UserContext`），限流在后 —— 这样限流才能按用户
 - **Key 加主体维度**：`rate:limit:{u:userId | ip:IP}:{分类}:{秒}`；登录用户按 userId，匿名按来源 IP（否则匿名请求全挤一个桶）
-- **阈值改单用户量级且 yml 可配**：`xhs.rate-limit.{like:20, comment:5, search:10, default:50}`（评论 5/秒是 Day8 选做挑战的指定值）
+- **阈值改单用户量级且 yml 可配**：`xhs.rate-limit.{like:20, comment:5, search:10, default:50}`（评论 5/秒是选做挑战的指定值）
 
 ### 改动文件
 - `application.yml`：新增 `xhs.rate-limit.*`
@@ -508,7 +508,7 @@ score = base × 0.5 ^ (龄期小时 / 半衰期小时)      （半衰期指数�
 ### 踩坑点 / 已知局限
 - **衰减到极小值后，实时 `addHeat` 的"跳变"会被放大**：老笔记的基础分衰减到 ~1e-27，此时一次点赞的 `ZINCRBY +1` 会让它瞬间冲到榜首，直到下一次重算（≤10 分钟）拉回。彻底解决要么让 `addHeat` 按龄期加权、要么缩短重算周期；当前按「生产常见做法：定期重算 + 接受区间内漂移」处理。
 - **本项目内容都太老**（种子笔记约 45 天龄），衰减后半衰期 12h 下几乎所有分数都趋近 0，榜单排序区分度低——调大 `half-life-hours` 可缓解。
-- 重算与 `InitHotRunner` 有重叠：`InitHotRunner` 只在榜单为空时按未衰减的基础分冷启动，30 秒后就会被本任务覆盖。保留它是为了对齐 Day7 手册，二者可择一。
+- 重算与 `InitHotRunner` 有重叠：`InitHotRunner` 只在榜单为空时按未衰减的基础分冷启动，30 秒后就会被本任务覆盖。保留它是为了对齐手册要求，二者可择一。
 
 ### 验证（已实测）
 - 日志：`【热榜重算】20 篇笔记已按半衰期 12.0 小时衰减重算`
@@ -694,7 +694,7 @@ xhs.exchange (topic)                         xhs.dlx (direct)
 ## P1-5 开启 publisher confirm + returns（2026-10-07）
 
 ### 问题
-手册 Day6 明说发布端确认「未开启」；消息发出去后是否到达交换机 / 能否入队，应用层完全无感知。
+手册明说发布端确认「未开启」；消息发出去后是否到达交换机 / 能否入队，应用层完全无感知。
 
 ### 方案
 开启 Spring AMQP 的发布端可靠性三件套，并注册回调把失败"变得可见"：
@@ -763,7 +763,7 @@ xhs.exchange (topic)                         xhs.dlx (direct)
 ## P1-1 评论列表缓存：游标分页 + 只缓存首页（2026-10-06）
 
 ### 问题
-`CommentService.listByNote` 直查库，`RedisKeys.commentList` 定义了从未使用；整列表缓存在大评论量下有大 key、重建风暴、深分页等问题（Day2 选做挑战文档已分析）。
+`CommentService.listByNote` 直查库，`RedisKeys.commentList` 定义了从未使用；整列表缓存在大评论量下有大 key、重建风暴、深分页等问题（选做挑战文档已分析）。
 
 ### 方案
 **游标分页（新→旧）+ 只缓存第一页**

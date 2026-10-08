@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Day9：收藏事件消息
+ * 收藏事件消息
  * Redis 更新成功后发送，由 FavoriteConsumer 异步落库
  */
 @Data

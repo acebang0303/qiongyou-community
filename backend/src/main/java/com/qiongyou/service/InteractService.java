@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 
 /**
- * Day6 版本（在 Day4 幂等基础上）：
+ * 
  * Redis 原子操作成功 → 发送 LikeEvent 到 MQ → 消费者异步落库
  * 用户请求在 Redis 这一步就返回了，不再等待数据库
  */
@@ -95,9 +95,9 @@ public class InteractService {
         if (result == null || result == 0) {
             return Result.fail("您已经点过赞了");
         }
-        // ★ Day6：真正落库的动作交给 MQ（削峰）
+        // ★ 真正落库的动作交给 MQ（削峰）
         sendLikeEvent(noteId, userId, true);
-        // ★ Day7：点赞 → 热度 +1
+        // ★ 点赞 → 热度 +1
         hotService.addHeat(noteId, HotService.WEIGHT_LIKE);
         return Result.ok();
     }
@@ -109,7 +109,7 @@ public class InteractService {
                 userId.toString());
         if (result != null && result == 1) {
             sendLikeEvent(noteId, userId, false);
-            // ★ Day7：取消点赞 → 热度 -1
+            // ★ 取消点赞 → 热度 -1
             hotService.addHeat(noteId, -HotService.WEIGHT_LIKE);
         }
         return Result.ok();
@@ -126,9 +126,9 @@ public class InteractService {
         if (result == null || result == 0) {
             return Result.fail("您已经收藏过了");
         }
-        // ★ Day9：落库（t_note_favorite + favorite_count）交给 MQ，消费者异步处理（削峰）
+        // ★ 落库（t_note_favorite + favorite_count）交给 MQ，消费者异步处理（削峰）
         sendFavoriteEvent(noteId, userId, true);
-        // ★ Day7：收藏 → 热度 +2
+        // ★ 收藏 → 热度 +2
         hotService.addHeat(noteId, HotService.WEIGHT_FAVORITE);
         return Result.ok();
     }
@@ -140,7 +140,7 @@ public class InteractService {
                 userId.toString());
         if (result != null && result == 1) {
             sendFavoriteEvent(noteId, userId, false);
-            // ★ Day7：取消收藏 → 热度 -2
+            // ★ 取消收藏 → 热度 -2
             hotService.addHeat(noteId, -HotService.WEIGHT_FAVORITE);
         }
         return Result.ok();
@@ -154,7 +154,7 @@ public class InteractService {
         if (result == null || result == 0) {
             return Result.fail("您已经分享过了");
         }
-        // ★ Day9：落库（t_note_share + share_count）交给 MQ，消费者异步处理（削峰）
+        // ★ 落库（t_note_share + share_count）交给 MQ，消费者异步处理（削峰）
         sendShareEvent(noteId, userId, true);
         return Result.ok();
     }

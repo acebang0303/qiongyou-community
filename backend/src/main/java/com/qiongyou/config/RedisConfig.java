@@ -14,7 +14,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
- * Day2：Redis 配置
+ * Redis 配置
  * 默认的 RedisTemplate 使用 JDK 序列化（不可读），这里换成：
  * - Key：String
  * - Value：Jackson JSON（携带类型信息，可直接反序列化为 NoteVO）

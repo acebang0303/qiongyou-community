@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * ★ P2-2：笔记详情的缓存三兄弟（Day5 的核心考点）
+ * ★ P2-2：笔记详情的缓存三兄弟（核心考点）
  * 重点回归「空对象缓存防穿透」——不存在的 id 也要落一个短 TTL 的空对象，
  * 否则每次请求都会击穿到 MySQL。
  */

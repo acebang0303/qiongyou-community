@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Day7：热点榜单
+ * 热点榜单
  *
  * ZSet Key: hot:notes
  *   member = noteId

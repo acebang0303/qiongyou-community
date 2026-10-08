@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Day8：
+ * 
  * - 注册限流拦截器（拦截所有 /api/** 接口）
  * - 提供 RestTemplate Bean（EsService 调用 ES REST API 用）
  * P0-2：新增认证拦截器，解析 JWT 写入 UserContext

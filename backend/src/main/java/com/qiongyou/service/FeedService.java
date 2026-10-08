@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Day7：关注页 Feed
+ * 关注页 Feed
  * ★ P1-9：加入大V推拉结合
  *
  * 发件箱 ZSet: feed:outbox:{authorId} —— 每个作者发布时只写这一条

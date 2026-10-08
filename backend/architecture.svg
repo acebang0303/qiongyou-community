@@ -171,20 +171,20 @@
   <!-- Redis: center≈420 -->
   <rect x="245" y="598" width="350" height="68" rx="10" fill="url(#gRedis)" stroke="#b02020" stroke-width="1.5" stroke-dasharray="8,4" filter="url(#sh)"/>
   <text x="420" y="620" text-anchor="middle" fill="#fff" font-size="15" font-weight="bold">Redis</text>
-  <text x="420" y="638" text-anchor="middle" fill="#ffe0e0" font-size="10">Day2 笔记详情缓存 · Day3 点赞写流量承接</text>
-  <text x="420" y="654" text-anchor="middle" fill="#ffe0e0" font-size="10">Day7 热门榜 ZSet · 关注 Feed ZSet</text>
+  <text x="420" y="638" text-anchor="middle" fill="#ffe0e0" font-size="10">笔记详情缓存 · 点赞写流量承接</text>
+  <text x="420" y="654" text-anchor="middle" fill="#ffe0e0" font-size="10">热门榜 ZSet · 关注 Feed ZSet</text>
 
   <!-- RabbitMQ: center≈660 -->
   <rect x="607" y="598" width="106" height="68" rx="10" fill="url(#gRabbit)" stroke="#cc5200" stroke-width="1.5" stroke-dasharray="8,4" filter="url(#sh)"/>
   <text x="660" y="618" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">RabbitMQ</text>
-  <text x="660" y="636" text-anchor="middle" fill="#fff3e0" font-size="9">Day6</text>
+  <text x="660" y="636" text-anchor="middle" fill="#fff3e0" font-size="9">削峰</text>
   <text x="660" y="650" text-anchor="middle" fill="#fff3e0" font-size="9">评论通知异步</text>
   <text x="660" y="662" text-anchor="middle" fill="#fff3e0" font-size="9">流量削峰</text>
 
   <!-- ES: center≈910 -->
   <rect x="726" y="598" width="106" height="68" rx="10" fill="url(#gES)" stroke="#005599" stroke-width="1.5" stroke-dasharray="8,4" filter="url(#sh)"/>
   <text x="779" y="618" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Elasticsearch</text>
-  <text x="779" y="636" text-anchor="middle" fill="#d0e8ff" font-size="9">Day8</text>
+  <text x="779" y="636" text-anchor="middle" fill="#d0e8ff" font-size="9">搜索</text>
   <text x="779" y="650" text-anchor="middle" fill="#d0e8ff" font-size="9">全文检索</text>
   <text x="779" y="662" text-anchor="middle" fill="#d0e8ff" font-size="9">分词·高亮·聚合</text>
 
@@ -243,5 +243,5 @@
   <line x1="50" y1="924" x2="86" y2="924" stroke="#1e8e3e" stroke-width="2"/>
   <text x="92" y="928" fill="#666" font-size="9">= 当前链路</text>
   <line x1="200" y1="924" x2="236" y2="924" stroke="#888" stroke-width="2" stroke-dasharray="6,3"/>
-  <text x="242" y="928" fill="#666" font-size="9">= 演进规划（Day2~Day8 逐步引入中间件）</text>
+  <text x="242" y="928" fill="#666" font-size="9">= 演进规划（逐步引入中间件）</text>
 </svg>

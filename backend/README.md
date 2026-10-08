@@ -61,13 +61,13 @@ RabbitMQ 异步削峰、Feed 流与热榜、Elasticsearch 搜索、限流与降�
 
 | 阶段 | 解决的问题 | 关键手段 |
 |---|---|---|
-| Day2 缓存 | 热点笔记读压 MySQL | Cache Aside + TTL |
-| Day3 高频写 | 一次点赞 4 条 SQL | Redis Set 关系 + 计数器 |
-| Day4 幂等 | "判断+计数"竞态 | **Lua 脚本**合并为原子操作 |
-| Day5 缓存三兄弟 | 穿透/击穿/雪崩 | 空对象缓存 + 分布式锁互斥重建 + 随机 TTL |
-| Day6 削峰 | 洪峰直击数据库 | RabbitMQ 异步落库 + 消费端幂等 |
-| Day7 读扩散 | 关注页/热榜实时聚合慢 | ZSet Feed 收件箱 + 热榜 |
-| Day8 搜索与保护 | LIKE 全表扫、无自保护 | ES 倒排索引 + 固定窗口限流 + 降级兜底 |
+| 缓存层 | 热点笔记读压 MySQL | Cache Aside + TTL |
+| 高频写 | 一次点赞 4 条 SQL | Redis Set 关系 + 计数器 |
+| 幂等 | "判断+计数"竞态 | **Lua 脚本**合并为原子操作 |
+| 缓存三兄弟 | 穿透/击穿/雪崩 | 空对象缓存 + 分布式锁互斥重建 + 随机 TTL |
+| 削峰 | 洪峰直击数据库 | RabbitMQ 异步落库 + 消费端幂等 |
+| 读扩散 | 关注页/热榜实时聚合慢 | ZSet Feed 收件箱 + 热榜 |
+| 搜索与保护 | LIKE 全表扫、无自保护 | ES 倒排索引 + 固定窗口限流 + 降级兜底 |
 | **生产化** | 认证/事务/一致性/可观测/测试/部署 | JWT、BCrypt、MQ 可靠性三件套、对账、IK、游标分页、Actuator、Testcontainers、Docker |
 
 ## 关键设计决策（面试可讲点）
@@ -160,5 +160,5 @@ src/test/java/com/qiongyou/ Testcontainers 集成测试
 （见 [application.yml](src/main/resources/application.yml) 的 `${ENV:默认值}` 占位符）。
 生产 profile（`SPRING_PROFILES_ACTIVE=prod`）已默认关闭 SQL 打印与接口文档。
 
-> 仓库中若包含课程实训的参考资料（`dayN/` 下的手册与参考实现），版权归课程方所有，此处仅作学习记录之用。
+> 早期学习阶段参考的培训资料版权归原作者所有，未随本仓库公开。
 

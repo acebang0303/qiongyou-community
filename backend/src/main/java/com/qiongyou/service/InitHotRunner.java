@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * Day7：热榜冷启动初始化
+ * 热榜冷启动初始化
  * 启动时若 hot:notes 为空，用 MySQL 存量数据按热度公式重建一次
  * （这也是 Redis 数据丢失后的"重建"思路）
  */

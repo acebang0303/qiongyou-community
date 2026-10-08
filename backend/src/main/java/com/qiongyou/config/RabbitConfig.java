@@ -17,14 +17,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Day6：RabbitMQ 拓扑
+ * RabbitMQ 拓扑
  *
  * xhs.exchange (topic)
  *   like.db.#        → like.db.queue         点赞异步落库
- *   favorite.db.#    → favorite.db.queue     收藏异步落库（Day9）
- *   share.db.#       → share.db.queue        分享异步落库（Day9）
+ *   favorite.db.#    → favorite.db.queue     收藏异步落库
+ *   share.db.#       → share.db.queue        分享异步落库
  *   comment.notify.# → comment.notify.queue  评论通知
- *   note.es.#        → note.es.queue         笔记同步ES（Day8 消费）
+ *   note.es.#        → note.es.queue         笔记同步ES（异步消费）
  *
  * ★ P1-6：每个业务队列挂死信交换机 xhs.dlx（direct），消费重试耗尽后进对应 *.dlq
  */

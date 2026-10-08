@@ -2,7 +2,7 @@
   "name": "qiongyou-frontend",
   "version": "1.0.0",
   "private": true,
-  "description": "琼游100天交流分享社区 —— Day0 基线前端",
+  "description": "琼游100天交流分享社区 —— 前端",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
