@@ -3,8 +3,9 @@ target/
 *.class
 *.log
 
-# ---- 前端依赖（此前被误提交，已用 git rm --cached 取消跟踪）----
+# ---- 前端依赖 ----
 node_modules/
+dist/
 
 # ---- IDE / 编辑器 ----
 .idea/
@@ -16,18 +17,12 @@ node_modules/
 Thumbs.db
 
 # ---- 课程方实训资料（版权归课程方所有，不随本仓库公开）----
-day0/day1-笔记.pdf
-day0/xhs-frontend/项目说明文档.md
-day2/选做挑战设计.md
-day*/Day*-实训手册-*.md
-day*/Day*-实训手册-*.pdf
-day*/code/
-day8/mapping.json
-day8/notes.ndjson
+# 实训手册、课程参考实现、课程样例数据等统一收在这里
+_course-materials/
 
-# ---- JMeter 生成的仪表盘（可由 .jtl 用 `jmeter -g` 重新生成；保留统计结果）----
-day8/ratelimit/report/*
-!day8/ratelimit/report/statistics.json
-day8/ratelimit/report-comments/*
-!day8/ratelimit/report-comments/statistics.json
-day8/ratelimit/jmeter.log
+# ---- JMeter 生成的仪表盘（可由 .jtl 用 `jmeter -g` 重新生成；仅保留统计结果）----
+benchmarks/ratelimit/report/*
+!benchmarks/ratelimit/report/statistics.json
+benchmarks/ratelimit/report-comments/*
+!benchmarks/ratelimit/report-comments/statistics.json
+benchmarks/ratelimit/jmeter.log

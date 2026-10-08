@@ -10,12 +10,12 @@
 ## P0 — 阻断级（不做就是坏的 / 面试一问就穿）
 
 - [x] **P0-1 修复 `init.sql` 与线上库结构漂移** ｜ S ｜ ✅ 2026-10-06
-  - `t_note_share` 表存在于当前库（手动建过），但没写进 `day0/sql/init.sql`；换机器 `docker compose up` 会缺表，分享落库直接报错。
+  - `t_note_share` 表存在于当前库（手动建过），但没写进 `sql/init.sql`；换机器 `docker compose up` 会缺表，分享落库直接报错。
   - 同一脚本还缺 `t_comment (note_id, id)` 联合索引（Day2 选做挑战文档建议，深分页/排序稳定性需要）。
   - 动手：把线上库 `SHOW CREATE TABLE` 的结果回填进 `init.sql`，并补 `ALTER TABLE t_comment ADD INDEX idx_note_id (note_id, id)`。
   - 验收：全新环境从 `init.sql` 建库后，分享一次能看到 `t_note_share` 落库。
   - **完成记录（2026-10-06）**
-    - 改动文件：`day0/sql/init.sql`
+    - 改动文件：`sql/init.sql`
       - 新增 `t_note_share` 表：列注释 + 表注释 `'分享表'` + `uk_user_note(user_id,note_id)` + `idx_note(note_id)`，置于收藏表之后；原「评论表/关注表」编号顺延为 6 / 7
       - `t_comment` 新增 `KEY idx_note_id (note_id, id)`
     - 线上库同步执行（`xhs-mysql` 容器）
@@ -36,7 +36,7 @@
 - [x] **P0-3 密码 BCrypt 加密** ｜ S ｜ ✅ 2026-10-06
   - 现状：`UserService.login` 明文比对（`user.getPassword().equals(password)`）。
   - 方案：**BCrypt（spring-security-crypto）+ 存量密码批量迁移**（`VARCHAR(50)` → `VARCHAR(100)`）
-  - 动手点：`pom.xml`、新增 `config/PasswordConfig`、`service/UserService`、`day0/sql/init.sql`（列定义 + 8 条种子密码）、线上库 `ALTER` + `UPDATE`
+  - 动手点：`pom.xml`、新增 `config/PasswordConfig`、`service/UserService`、`sql/init.sql`（列定义 + 8 条种子密码）、线上库 `ALTER` + `UPDATE`
   - **完成记录**：8 个用户密码已迁移为 BCrypt(`123456`)，登录仍用 123456；列注释改为「密码（BCrypt 哈希）」
   - 验收：库中无明文密码；正确密码 200 / 错误密码 401 / 不存在用户 401（无 NPE）
 
@@ -149,7 +149,7 @@
   - 详情见 [CHANGELOG.md](CHANGELOG.md#p1-14-es-接入-ik-分词2026-10-07)
 
 - [x] **P1-15 ES 存量数据回填任务** ｜ M ｜ ✅ 2026-10-07
-  - 现在只有手工 `day8/notes-backfill.ndjson`。写一个 `_bulk` 回填的 Runner/接口，索引重建后可程序化恢复。
+  - 现在只有手工 `benchmarks/notes-backfill.ndjson`。写一个 `_bulk` 回填的 Runner/接口，索引重建后可程序化恢复。
   - 完成：`EsBackfillRunner`（索引为空则 `_bulk` 全量回填）+ `EsService.count()/bulkIndex()`
   - 验收：删索引后重启自动重建并回填 20 篇，ES 与 MySQL 文档数一致
   - 详情见 [CHANGELOG.md](CHANGELOG.md#p1-15-es-存量数据回填2026-10-07)

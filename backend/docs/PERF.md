@@ -98,7 +98,7 @@ cd docs/bench && ./run-bench.sh        # 5 场景 × 2 版本，结果写入 out
 ### 已有数据
 
 采集时间：2026-10-06（**早于** P1-13 的"按用户维度限流"改造，当时是**全局固定窗口**）
-工具：JMeter 5.6.3　脚本与原始结果：`day8/ratelimit/`
+工具：JMeter 5.6.3　脚本与原始结果：`benchmarks/ratelimit/`
 
 | 场景 | 样本数 | 错误数 | 平均 RT | P95 | 最大 RT |
 |---|---|---|---|---|---|
@@ -107,7 +107,7 @@ cd docs/bench && ./run-bench.sh        # 5 场景 × 2 版本，结果写入 out
 | `POST /api/notes/1/comments`（评论限流） | 4000 | **3600** | 77.1 ms | 658.6 ms | 1742 ms |
 | `GET /api/notes/search`（评论轮） | 600 | 0 | 87.9 ms | 413.4 ms | 1152 ms |
 
-原始文件：`day8/ratelimit/report/statistics.json`、`day8/ratelimit/report-comments/statistics.json`
+原始文件：`benchmarks/ratelimit/report/statistics.json`、`benchmarks/ratelimit/report-comments/statistics.json`
 
 **结论**：超限请求被限流组件以 429 拦下（点赞 75% 被拒、评论 90% 被拒），
 同级未被限流的搜索接口错误率为 0 —— 证明限流**只作用于目标接口、没有连坐**。

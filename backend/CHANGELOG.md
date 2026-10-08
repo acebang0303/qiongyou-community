@@ -4,6 +4,41 @@
 
 ---
 
+## 仓库结构调整：去掉 day0/day8 前缀（2026-10-07）
+
+### 问题
+仓库顶层是 `day0/`、`day8/` —— 这是**课程按天分目录**留下的痕迹，在独立项目里没有意义，
+而且 `day*` 下混着代码、脚本、压测产物，看起来像作业堆而非一个项目。
+
+### 方案
+
+| 原路径 | 新路径 |
+|---|---|
+| `day0/xhs-backend/` | `backend/` |
+| `day0/xhs-frontend/` | `frontend/` |
+| `day0/sql/` | `sql/` |
+| `day8/ratelimit/`、`day8/notes-backfill.ndjson` | `benchmarks/` |
+
+- 新增**顶层 `README.md`**：项目总览 + 目录结构 + 快速开始 + 「想看什么去哪看」索引
+- 课程方资料（实训手册、参考实现、课程样例数据）统一收进 `_course-materials/` 并整目录忽略，
+  不再散落在业务目录里
+- 同步更新文档中的路径引用（`sql/`、`benchmarks/ratelimit/` 等）
+
+### 踩坑点
+- **必须用文件系统 `mv` 而不是 `git mv`**：`git mv` 只搬已跟踪文件，会把 `node_modules`、`target`、
+  `.idea` 等未跟踪内容留在原地，新路径下的前端将失去依赖。
+- **被忽略的课程资料会跟着目录一起搬**，而 `.gitignore` 里还是旧路径 → 它们会立刻变回「可被跟踪」。
+  所以调整目录后**必须同步改 `.gitignore`**；这次干脆把所有课程资料收进单一目录统一忽略。
+- **目录被占用导致 `mv` 失败**（`Device or resource busy` / `Permission denied`）：IDE 或当前工作目录
+  持有句柄时无法重命名目录本身。绕法是改为「逐个子项搬运」，目录本身留空即可（空目录 git 不跟踪）。
+
+### 验证（已实测）
+- `./ci.sh` → 9/9 通过（`pom.xml` 依赖的 `../sql/init.sql`、`docker-compose.yml` 的 `../sql/init.sql`
+  都是相对路径，移动后仍然成立）
+- 顶层只剩 `backend/ frontend/ sql/ benchmarks/` + `.gitignore` + `README.md`
+
+---
+
 ## 项目改名：xhs → 琼游100天交流分享社区（2026-10-07）
 
 ### 改动范围（文案 + 代码标识，**不动运行时资源**）
@@ -379,7 +414,7 @@ ik_max_word: 三亚三天两夜超全攻略 → 12 个词
 ## P1-15 ES 存量数据回填（2026-10-07）
 
 ### 问题
-索引重建（如换分词器）后没有程序化的数据恢复手段，只有手工 `day8/notes-backfill.ndjson`。
+索引重建（如换分词器）后没有程序化的数据恢复手段，只有手工 `benchmarks/notes-backfill.ndjson`。
 
 ### 方案
 `EsBackfillRunner`（`@Order(3)`）：启动时 `ensureIndex()` → `count()`，为 0 则从 MySQL 全量 `_bulk` 回填。
@@ -818,7 +853,7 @@ curl -s -X POST $B/api/notes -H "Authorization: Bearer $T" -H "Content-Type: app
 - `pom.xml`：新增 `org.springframework.security:spring-security-crypto`（版本由 Spring Boot BOM 管理）
 - `config/PasswordConfig.java`【新增】：`PasswordEncoder` Bean
 - `service/UserService.java`：`login` 改为 `passwordEncoder.matches(raw, hash)`
-- `day0/sql/init.sql`：`password` 列改 `VARCHAR(100) COMMENT '密码（BCrypt 哈希）'`；8 条种子数据密码改为 BCrypt 密文
+- `sql/init.sql`：`password` 列改 `VARCHAR(100) COMMENT '密码（BCrypt 哈希）'`；8 条种子数据密码改为 BCrypt 密文
 - 线上库：`ALTER TABLE t_user MODIFY password VARCHAR(100)...` + `UPDATE t_user SET password='<bcrypt>'`（8 行）
 
 ### 设计说明
@@ -902,11 +937,11 @@ curl -s "$B/api/notes/follow?page=1&size=2" -H "Authorization: Bearer <TOKEN>"
 ## P0-1 库表结构对齐 init.sql（2026-10-06）
 
 ### 问题
-线上库存在 `t_note_share` 表，但未写进 `day0/sql/init.sql`；换机器 `docker compose up` 会缺表。另 `t_comment` 缺 `(note_id, id)` 联合索引。
+线上库存在 `t_note_share` 表，但未写进 `sql/init.sql`；换机器 `docker compose up` 会缺表。另 `t_comment` 缺 `(note_id, id)` 联合索引。
 同时发现 `t_note.share_count` 列注释为乱码 `'åˆ†äº«æ•°'`（应为 `分享数`）。
 
 ### 改动
-- `day0/sql/init.sql`：
+- `sql/init.sql`：
   - 新增 `t_note_share` 表（列注释 + 表注释 `'分享表'` + `uk_user_note` + `idx_note`），置于收藏表之后，原「评论表/关注表」编号顺延为 6/7
   - `t_comment` 新增 `KEY idx_note_id (note_id, id)`
 - 线上库（`xhs-mysql` 容器）同步执行对应 `ALTER`（补表注释/索引、修复乱码注释、加联合索引）

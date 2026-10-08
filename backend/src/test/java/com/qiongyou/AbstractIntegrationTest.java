@@ -12,7 +12,7 @@ import org.testcontainers.utility.DockerImageName;
  * ★ P2-2 集成测试基类
  *
  * 用 Testcontainers 起临时 MySQL / Redis / RabbitMQ，隔离于开发环境、不碰开发数据。
- * - MySQL 用 `day0/sql/init.sql` 建库灌种子数据（由 maven-resources-plugin 拷进 test classpath）
+ * - MySQL 用 `sql/init.sql` 建库灌种子数据（由 maven-resources-plugin 拷进 test classpath）
  * - ES 不启容器：把 `xhs.es.base-url` 指到不可达端口，即完全隔离，
  *   同时顺带覆盖「ES 不可用 → 回退 MySQL」的降级路径
  * - 定时任务延迟调成 1 天，避免测试期间并发改动 Redis / 热榜导致断言不稳定

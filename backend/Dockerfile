@@ -9,7 +9,7 @@ WORKDIR /build
 # 先只拷 pom 拉依赖：源码变化时这一层可复用，不必重新下载
 COPY pom.xml .
 # pom 里的 maven-resources-plugin 会引用 ../sql/init.sql（供测试建库用）。
-# 镜像里没有 day0/sql 目录，先建个空的，避免资源插件在 process-test-resources 阶段报错。
+# 构建上下文只有 backend/，镜像里没有 ../sql 目录，先建个空的 /sql，避免资源插件在 process-test-resources 阶段报错。
 RUN mkdir -p /sql && mvn -B -q dependency:go-offline
 
 COPY src ./src

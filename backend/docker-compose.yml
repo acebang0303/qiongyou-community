@@ -1,4 +1,4 @@
-# 仿小红书高并发实训 —— 中间件 + 应用编排
+#中间件 + 应用编排
 #
 # ★ P2-5 修复与增强：
 #   1) mysql 挂载 ../sql/init.sql 到初始化目录 —— 原文件注释写着"首次启动自动执行建库建表"，
@@ -7,6 +7,7 @@
 #   3) 新增 backend 服务，并放进 `app` profile：
 #      - `docker compose up -d`                 只起中间件（开发时后端仍在 IDE 里跑）
 #      - `docker compose --profile app up -d`   连后端一起起
+name: xhs-backend
 services:
   mysql:
     image: mysql:8.0

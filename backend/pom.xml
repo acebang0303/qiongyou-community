@@ -140,7 +140,7 @@
 
     <build>
         <plugins>
-            <!-- ★ P2-2：把 day0/sql/init.sql 拷进测试类路径，供 Testcontainers 建库用。
+            <!-- ★ P2-2：把 sql/init.sql 拷进测试类路径，供 Testcontainers 建库用。
                  刻意不在 src/test/resources 里放副本，避免脚本出现两份、日后漂移 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
